@@ -386,7 +386,7 @@ sub runCommands
 
   if (isValidCommand($command) == 1)
   {
-    if (commands()->{$command}{auth} && BobboBot::auth::check($nick, $where) == 0)
+    if (commands()->{$command}{auth}() && BobboBot::auth::check($nick, $where) == 0)
     {
       $irc->yield($form, $where, 'Permission denied.');
     }
