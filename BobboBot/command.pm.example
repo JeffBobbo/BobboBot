@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+
+package BobboBot::MOD_NAME;
+
+use warnings;
+use strict;
+
+# writing new commands is pretty easy as long as you know perl
+#
+# use find and replace to replace instances of MOD_NAME with the name of the command, this is what the command will appear as in !list etc
+# BobboBot::command needs to be imported as well as Exporter, run, help and auth should be exported
+#
+
+# called when the user does !MOD_NAME
+# run gets given a single argument, a hash ref contain who issued the command, the target (channel or self), the form ('notice', 'public' or 'privmsg') and an array reference of the arguments provided
+sub run
+{
+  my $nick = $_[0]->{who}; # who done this command
+  my $where = $_[0]->{where}; # where they done it, this'll either be a channel name, or the name of the bot (because it was a notice/pm)
+  my $form = $_[0]->{form}; # 'public', 'notice' or 'privmsg', how they issued the command
+
+  # arguments are provided as an array, each element is a single word
+  my @args = @{$_[0]->{arg}}; # use @{} to dereference the array reference to get an array
+
+  my $ret = 'Supplied arguments: ';
+
+  if (@args) # tests for length
+  {
+    $ret .= $args[0];
+    for my $i (1..@args)
+    {
+      $ret .= ', ' . $args[$i];
+    }
+  }
+
+  return $ret; # this is what is printed back to IRC
+}
+
+# gets called when a user does !help MOD_NAME
+# recieves no arguments
+sub help
+{
+  return '!MOD_NAME - echoes arguments supplied';
+}
+
+# tells !list if this command needs auth, but isn't used for anything else
+# auth-requiringness is automatically test before call run().
+# If only one part of the command (like the add functions of countdown or quote), you must explicitly
+# test for auth, and have auth return 0. To test for auth use this:
+# if (BobboBot::auth::check($_nick[0]->{who}, $_[0]->{where}) == 1)
+# alternatively you can assign the who and where members to local variables like $nick and $where
+# to save some tpying if you need those variables again
+sub auth
+{
+  return 0; # if this command requires auth, return 1 instead
+}
+
+BobboBot::command::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);
+BobboBot::command::add('MOD_NAME', 'help', \&BobboBot::MOD_NAME::help);
+BobboBot::command::add('MOD_NAME', 'auth', \&BobboBot::MOD_NAME::auth);
+
+1;

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#sleep 10 #make sure the old bot has time to clear itself up before trying to start the new one
+nohup ./BobboBot.pl > sout 2>&1 &

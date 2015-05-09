@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+
+package BobboBot::MOD_NAME;
+
+use warnings;
+use strict;
+
+sub run
+{
+  return '';
+}
+
+sub help
+{
+  return '!MOD_NAME - ';
+}
+
+sub auth
+{
+  return 0;
+}
+
+BobboBot::command::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);
+BobboBot::command::add('MOD_NAME', 'help', \&BobboBot::MOD_NAME::help);
+BobboBot::command::add('MOD_NAME', 'auth', \&BobboBot::MOD_NAME::auth);
+
+1;
