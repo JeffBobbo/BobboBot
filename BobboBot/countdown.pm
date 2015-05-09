@@ -63,7 +63,11 @@ sub load
   close($fh);
 
   my $src = join('', @lines);
-  return decode_json($src);
+  if (length($src))
+  {
+    return decode_json($src);
+  }
+  return undef;
 }
 
 sub save
