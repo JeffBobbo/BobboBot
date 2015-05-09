@@ -401,12 +401,12 @@ sub runCommands
           {
             if ($r->{type} eq 'ACTION')
             {
-              $irc->yield(ctcp => $where => 'ACTION ' . $r->{text});
+              $irc->yield(ctcp => $where => 'ACTION ' . $r->{text}) if (length($r->{text}));
             }
           }
           else
           {
-            $irc->yield($form, $where, $r);
+            $irc->yield($form, $where, $r) if (length($r));
           }
         }
       }
@@ -414,12 +414,12 @@ sub runCommands
       {
         if ($response->{type} eq 'ACTION')
         {
-          $irc->yield(ctcp => $where => 'ACTION ' . $response->{text});
+          $irc->yield(ctcp => $where => 'ACTION ' . $response->{text}) if (length($response->{text}));
         }
       }
       else # scalar
       {
-        $irc->yield($form, $where, $response);
+        $irc->yield($form, $where, $response) if (length($response));
       }
     }
   }
