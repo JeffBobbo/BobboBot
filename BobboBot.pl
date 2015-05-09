@@ -58,7 +58,7 @@ my $lastMsg  = -1;
 my $lastPing = -1;
 my $lastPong = -1;
 
-my $restart = 0; # set to true in restart.pm
+our $restart = 0; # set to true in restart.pm
 
 use constant {
   PUBLIC  => 0,
@@ -121,12 +121,10 @@ sub _stop
 {
   if ($restart)
   {
-    print "restarting\n";
-    exec $0 . ' ' . join(' ', @ARGV);
+    exec "./StartBot";
   }
   else
   {
-    print "bye\n";
     exit(0);
   }
 }
@@ -431,7 +429,8 @@ sub runCommands
 
 sub irc_shutdown
 {
-  exit(0);
+  _stop();
+#  exit(0);
 }
 
 sub autoEvents

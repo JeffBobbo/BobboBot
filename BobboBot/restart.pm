@@ -7,8 +7,8 @@ use strict;
 
 sub run
 {
-  $main::irc->yield('shutdown', 'Be right back!');
   $main::restart = 1;
+  $main::irc->yield('shutdown', 'Be right back!');
   return "";
 }
 
