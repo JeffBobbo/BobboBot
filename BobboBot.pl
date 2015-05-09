@@ -52,8 +52,7 @@ my $config = Config->new('bot.conf');
 $config->read();
 readUsers('auth.conf');
 
-#loadChannels("channels.conf");
-loadChannels("test_channels.conf");
+loadChannels("channels.conf");
 
 my $lastMsg  = -1;
 my $lastPing = -1;
