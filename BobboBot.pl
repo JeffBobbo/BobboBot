@@ -45,6 +45,7 @@ use BobboBot::users;
 use BobboBot::kill;
 use BobboBot::restart;
 use BobboBot::force;
+use BobboBot::update;
 
 #flush files
 $| = 1;
