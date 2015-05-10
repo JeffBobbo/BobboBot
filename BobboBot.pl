@@ -287,12 +287,12 @@ sub irc_public
 
   if ($command =~ s/^!([^!].*)$/$1/)
   {
-    if (time() < ($lastMsg + $config->getValue("msgRate")) && !check($who, $target))
+    if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($who, $target))
     {
       return;
     }
     $lastMsg = time();
-    if ($config->getValue("silent") == 2 && !check($who, $target))
+    if ($config->getValue("silent") == 2 && !BobboBot::auth::check($who, $target))
     {
       return;
     }
@@ -311,12 +311,12 @@ sub irc_notice
 
   if ($msg =~ s/^!([^!].*)$/$1/)
   {
-    if (time() < ($lastMsg + $config->getValue("msgRate")) && !check($who, $target))
+    if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($who, $target))
     {
       return;
     }
     $lastMsg = time();
-    if ($config->getValue("silent") == 2 && !check($who, $target))
+    if ($config->getValue("silent") == 2 && !BobboBot::auth::check($who, $target))
     {
       return;
     }
@@ -336,12 +336,12 @@ sub irc_msg
 
   if ($msg =~ s/^!([^!].*)$/$1/)
   {
-    if (time() < ($lastMsg + $config->getValue("msgRate")) && !check($who, $target))
+    if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($who, $target))
     {
       return;
     }
     $lastMsg = time();
-    if ($config->getValue("silent") == 2 && !check($who, $target))
+    if ($config->getValue("silent") == 2 && !BobboBot::auth::check($who, $target))
     {
       return;
     }
