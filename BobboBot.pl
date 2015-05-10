@@ -34,6 +34,7 @@ use BobboBot::roulette;
 use BobboBot::countdown;
 use BobboBot::core;
 use BobboBot::guess;
+use BobboBot::mastermind;
 # supporting modules
 use BobboBot::math;
 use BobboBot::config;
