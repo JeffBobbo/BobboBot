@@ -7,7 +7,7 @@ use strict;
 
 sub run
 {
-  $main::restart = 1;
+  $main::cleanExit = 2;
   $main::irc->yield('shutdown', 'Be right back!');
   return "";
 }

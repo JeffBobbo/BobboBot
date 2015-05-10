@@ -42,7 +42,7 @@ use BobboBot::logger;
 # auth stuff
 use BobboBot::auth;
 use BobboBot::users;
-use BobboBot::kill;
+use BobboBot::shutdown;
 use BobboBot::restart;
 use BobboBot::force;
 use BobboBot::update;
@@ -60,7 +60,7 @@ my $lastMsg  = -1;
 my $lastPing = -1;
 my $lastPong = -1;
 
-our $restart = 0; # set to true in restart.pm
+our $cleanExit = 0; # 1 for shutdown, 2 for restart
 
 use constant {
   PUBLIC  => 0,
@@ -121,9 +121,13 @@ sub _start
 
 sub _stop
 {
-  if ($restart)
+  if ($cleanExit == 2)
   {
     exec "./StartBot";
+  }
+  elsif ($cleanExit == 1)
+  {
+    exit(0);
   }
 }
 
