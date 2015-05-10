@@ -33,6 +33,7 @@ use BobboBot::rpn;
 use BobboBot::roulette;
 use BobboBot::countdown;
 use BobboBot::core;
+use BobboBot::guess;
 # supporting modules
 use BobboBot::math;
 use BobboBot::config;
