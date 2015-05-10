@@ -12,6 +12,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(logEvent logMsg);
 
 my $logdir = "logs"; # we'll place logs in here based on yyyy-mm-dd
+mkdir($logdir, 0755) if (!-d $logdir);
 
 sub logEvent
 {
