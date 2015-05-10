@@ -124,10 +124,6 @@ sub _stop
   {
     exec "./StartBot";
   }
-  else
-  {
-    exit(0);
-  }
 }
 
 sub irc_001 {
