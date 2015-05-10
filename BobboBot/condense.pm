@@ -12,7 +12,6 @@ sub run
 {
   my @arg = @{$_[0]->{arg}};
   my $destination = shift(@arg);
-#  my @augs = shift();
 
   my $augRef = {
     MINOR => 0x01,
@@ -41,6 +40,14 @@ sub run
     if (!isNumber($augCount->{$level}))
     {
       return 'Invalid quantity for aug type ' . $level;
+    }
+    if (floor($augCount->{$level}) != $augCount->{$level})
+    {
+      return 'Can\'t have a fraction of an augmenter';
+    }
+    if ($augCount->{$level} > 10000) # can't condense this much
+    {
+      return 'Can\'t condense that much.';
     }
   }
   my $totalPoints = 0;
@@ -75,12 +82,13 @@ sub run
     $totalPoints += ($augRef->{uc($type)} * $num);
   }
   my $result = floor($totalPoints / $augRef->{uc($destination)});
-  return 'The combination of those augmenters will make ' . commifyNumber($result) . ' ' . $destination . ' augs.';
+  my $remain = $totalPoints % $augRef->{uc($destination)};
+  return 'The combination of those augmenters will make ' . commifyNumber($result) . ' ' . $destination . ' augs, with ' . $remain . ' remaining \'augmenter points\'.';
 }
 
 sub help
 {
-  return '!condense (target) (minor) (basic) (std) (good) (exc) (sup) (ult) - Calculates how many augmenters you can make of target type from the numbers you have. Only need to fill in number of augs up to highest. Target must not contain punctation';
+  return '!condense target minor (basic) (std) (good) (exc) (sup) (ult) - Calculates how many augmenters you can make of target type from the numbers you have. Only need to fill in number of augs up to highest. Target must not contain punctation';
 }
 
 sub auth
