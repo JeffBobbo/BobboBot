@@ -17,7 +17,7 @@ use BobboBot::help;
 # ss util commands
 use BobboBot::status;
 use BobboBot::ration;
-use BobboBot::build;
+use BobboBot::manhours;
 use BobboBot::savings;
 use BobboBot::condense;
 use BobboBot::pvp;

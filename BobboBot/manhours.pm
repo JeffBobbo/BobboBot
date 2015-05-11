@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-package BobboBot::build;
+package BobboBot::manhours;
 
 use warnings;
 use strict;
@@ -19,7 +19,7 @@ sub run
 
   if (!defined $manhours)
   {
-    return 'Invalid parameters given. Usage: !build (manhours) [workers] [numBuilding] [percent]';
+    return 'Invalid parameters given. Usage: !manhours (manhours) [workers] [numBuilding] [percent]';
   }
   if (!isNumber($manhours))
   {
@@ -81,7 +81,7 @@ sub run
 
 sub help
 {
-  return '!build (manhours) [workforce] [numBuilds] [progress] - Calculates build time, use progress to calculate time remaining'
+  return '!manhours (manhours) [workforce] [numBuilds] [progress] - Calculates build time, use progress to calculate time remaining'
 }
 
 sub auth
@@ -89,8 +89,8 @@ sub auth
   return 0;
 }
 
-BobboBot::command::add('build', 'run', \&BobboBot::build::run);
-BobboBot::command::add('build', 'help', \&BobboBot::build::help);
-BobboBot::command::add('build', 'auth', \&BobboBot::build::auth);
+BobboBot::command::add('manhours', 'run', \&BobboBot::manhours::run);
+BobboBot::command::add('manhours', 'help', \&BobboBot::manhours::help);
+BobboBot::command::add('manhours', 'auth', \&BobboBot::manhours::auth);
 
 1;
