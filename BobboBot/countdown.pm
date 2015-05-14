@@ -67,7 +67,7 @@ sub load
   {
     return decode_json($src);
   }
-  return undef;
+  return {};
 }
 
 sub save
@@ -230,7 +230,17 @@ sub run
       $remaining = $json->{$countdown}{repeat} + $remaining if ($remaining < 0); # $remaining is negative
       if ($remaining != 0)
       {
-        return $desc . ' is in ' . humanTime($remaining) . '.';
+        $desc .= ' is in ' . humanTime($remaining) . '.';
+        if (defined $json->{$countdown}{alerts})
+        {
+          my $x = 0;
+          foreach my $i (split(' ', $json->{$countdown}{alerts}))
+          {
+            last if (($x = $i) < $remaining);
+          }
+          $desc .= ' ' . humanTime($remaining - $x) . ' until next alert.';
+        }
+        return $desc;
       }
       return $desc . ' is now.';
     }
@@ -238,7 +248,18 @@ sub run
     {
       if ($now < $when)
       {
-        return $desc . ' is in ' . humanTime(abs($when - $now)) . '.';
+        my $remaining = $when - $now;
+        $desc .= ' is in ' . humanTime($remaining) . '.';
+        if (defined $json->{$countdown}{alerts})
+        {
+          my $x = 0;
+          foreach my $i (split(' ', $json->{$countdown}{alerts}))
+          {
+            last if (($x = $i) < $remaining);
+          }
+          $desc .= ' ' . humanTime($remaining - $x) . ' until next alert.';
+        }
+        return $desc;
       }
       elsif ($now == $when)
       {
