@@ -6,7 +6,9 @@ use warnings;
 use strict;
 
 use POSIX;
+use List::MoreUtils qw(none);
 use BobboBot::math;
+use BotData;
 
 use constant {
   CODE_LENGTH => 9,
@@ -16,6 +18,15 @@ use constant {
 my $code = makeCode();
 my $guesses = 0;
 
+my @players;
+my $file = 'data/mastermind.json';
+my $data = BotData->new($file, \&addPlayer);
+
+sub addPlayer
+{
+  return {play => 0, win => 0, lose => 0, guess => 0};
+}
+
 sub makeCode
 {
   return floor(rand(2 ** CODE_LENGTH));
@@ -23,8 +34,11 @@ sub makeCode
 
 sub restart
 {
-  $guesses = 0;
   $code = makeCode();
+  $data->incStat('thought');
+  $data->save();
+  undef(@players);
+  $guesses = 0;
   return {type => 'ACTION', text => 'thinks of a new code'};
 }
 
@@ -93,9 +107,14 @@ sub run
   my $player = $_[0]->{who};
   my @args = @{$_[0]->{arg}};
 
-  if ($args[0] eq 'new')
+  if (defined $args[0] && $args[0] eq 'new')
   {
     restart();
+  }
+  elsif (defined $args[0] && ($args[0] eq 'stat' || $args[0] eq 'stats'))
+  {
+    my $player = $args[1] || undef;
+    return $data->printStats($player);
   }
   else
   {
@@ -115,6 +134,8 @@ sub run
     $guess = oct("0b" . $guess); # convert
 
     $guesses++;
+    $data->incStat('guess', $player);
+    push(@players, $player) if (none {$_ eq $player} @players);
 
     my $bulls = 0;
     my $cows = 0;
@@ -127,6 +148,14 @@ sub run
     }
     if ($bulls == 9)
     {
+      foreach my $p (@players)
+      {
+        $data->incStat('play', $p);
+        next if ($p eq $player);
+        $data->incStat('lose', $p);
+      }
+      $data->incStat('win', $player);
+
       return ['Well done ' . $player . '! You got the code right in ' . $guesses . ' attemp' . ($guesses != 1 ? 's.' : '.'), restart()];
     }
     else

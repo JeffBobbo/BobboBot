@@ -6,26 +6,54 @@ use warnings;
 use strict;
 
 use POSIX;
+use List::MoreUtils qw(none); # array searching
 use BobboBot::math;
+use BotData;
 
-my $number = floor(rand(100)) + 1;
+my $number = pickNumber();
 my $guesses = 0;
+
+my @players;
+my $file = 'data/guess.json';
+my $data = BotData->new($file, \&addPlayer);
+
+sub addPlayer
+{
+  return {play => 0, win => 0, lose => 0, guess => 0};
+}
+
+sub pickNumber
+{
+  return floor(rand(100)) + 1;
+}
+
 sub think
 {
-  $number = floor(rand(100)) + 1;
+  $number = pickNumber();
+  $data->incStat('thought');
+  $data->save();
+  undef(@players);
   $guesses = 0;
   return {type => 'ACTION', text => 'thinks of another number betwen 1 and 100.'};
 }
 
 sub run
 {
+  my @args = @{$_[0]->{arg}};
+  if (defined $args[0] && ($args[0] eq "stat" || $args[0] eq "stats"))
+  {
+    my $player = $args[1] || undef;
+
+    return $data->printStats($player);
+  }
+
   if (index($_[0]->{where}, '#') == -1)
   {
     return ""; # do nothing if not in public
   }
 
   my $player = $_[0]->{who};
-  my $guess =  shift(@{$_[0]->{arg}});
+  my $guess =  shift(@args);
 
   if (!defined $guess || !isNumber($guess))
   {
@@ -37,6 +65,8 @@ sub run
   }
 
   $guesses++;
+  $data->incStat('guess', $player);
+  push(@players, $player) if (none {$_ eq $player} @players);
   if ($guess < $number)
   {
     return 'Too low!';
@@ -47,13 +77,22 @@ sub run
   }
   else
   {
+    foreach my $p (@players)
+    {
+      $data->incStat('play', $p);
+      next if ($p eq $player);
+      $data->incStat('lose', $p);
+    }
+    $data->incStat('win', $player);
+
     return ['Well done, ' . $player . ', you guessed it! It took ' . $guesses . ' guesses to get it!', think()];
   }
 }
 
 sub help
 {
-  return '!guess guess - Guess my number of 1 to 100!';
+  return ['!guess guess - Guess my number of 1 to 100!'.
+          '!guess stat [player] - Retrieve stats.'];
 }
 
 sub auth

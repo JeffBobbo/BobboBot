@@ -6,127 +6,41 @@ use warnings;
 use strict;
 
 use POSIX;
-use JSON qw(decode_json encode_json);
 use List::MoreUtils qw(none); # array searching
+use BotData;
 
-my $chamber = floor(rand(6)) + 1;
+my $chamber = load();
 
 my @players;
-my $file = 'roulette.json';
-my $json;
-
-sub load
-{
-  open(my $fh, '<', $file) or return {};
-  my @lines = <$fh>;
-  close($fh);
-
-  my $src = join('', @lines);
-  return decode_json($src) if length($src);
-  return {};
-}
-
-sub save
-{
-  return 0 if (!defined $json);
-
-  my $text = encode_json($json);
-  open(my $fh, '>', $file) or return 0;
-  print $fh $text;
-  close($fh);
-  return 1;
-}
+my $file = 'data/roulette.json';
+my $data = BotData->new($file, \&addPlayer);
 
 sub addPlayer
 {
-  my $who = shift();
-  $json->{$who} = {survive => 0, death => 0, game => 0, click => 0};
+  return {survive => 0, death => 0, game => 0, click => 0};
 }
 
-sub getStat
+sub load
 {
-  my $stat = shift();
-  my $who = shift(); # can be undef (for globals)
-
-  if (defined $who)
-  {
-    addPlayer($who) if (!defined $json->{$who});
-    return $json->{$who}{$stat};
-  }
-  else
-  {
-    $json->{'@global'} = {} if (!defined $json->{'@global'});
-    $json->{'@global'}{$stat} = 0 if (!defined $json->{'@global'}{$stat});
-    return $json->{$stat};
-  }
-}
-
-sub incStat
-{
-  my $stat = shift();
-  my $who = shift(); # can be undef (for globals)
-
-  if (defined $who)
-  {
-    addPlayer($who) if (!defined $json->{$who});
-    if (!defined $json->{$who}{$stat})
-    {
-      print 'Tried to increment invalid stat: ' . $stat . "\n";
-      return;
-    }
-    return $json->{$who}{$stat}++;
-  }
-  else
-  {
-    $json->{'@global'} = {} if (!defined $json->{'@global'}); # cheap hack, using @ so there's no collisions
-    $json->{'@global'}{$stat} = 0 if (!defined $json->{'@global'}{$stat});
-    return $json->{$stat}++;
-  }
-}
-
-sub statList
-{
-  my $what = shift();
-  return sort(keys %{$json->{$what}}) if (defined $json->{$what});
-  return ();
+  return floor(rand(6)) + 1;
 }
 
 sub reload
 {
-  $chamber = floor(rand(6)) + 1;
-  incStat('reload');
+  $chamber = load();
+  $data->incStat('reload');
+  $data->save();
   undef(@players); # clear array
   return {type => 'ACTION', text => 'loads a single round and spins the chamber.'};
 }
 
 sub run
 {
-  $json = load() if (!defined $json);
-
   my @args = @{$_[0]->{arg}};
   if (defined $args[0] && ($args[0] eq "stat" || $args[0] eq "stats"))
   {
     my $player = $args[1] || undef;
-
-    my @stats = statList($player || '@global');
-    my $ret;
-    if (defined $player)
-    {
-      return $player . ' has no stats!' if (@stats == 0);
-      $ret = 'Stats for ' . $player . ': ';
-    }
-    else
-    {
-      return 'Uh-oh! No global stats!' if (@stats == 0);
-      $ret = 'Overall stats: ';
-    }
-
-    $ret .= getStat($stats[0], $player) . ' ' . $stats[0] . (getStat($stats[0], $player) != 1 ? 's' : '');
-    for (my $i = 1; $i < @stats; $i++)
-    {
-      $ret .= ', ' . getStat($stats[$i], $player) . ' ' . $stats[$i] . (getStat($stats[$i], $player) != 1 ? 's' : '');
-    }
-    return $ret . '.';
+    return $data->printStats($player);
   }
 
   if (index($_[0]->{where}, '#') == -1)
@@ -137,30 +51,27 @@ sub run
   my $player = $_[0]->{who};
 
   $chamber--;
-  my @ret;
   if ($chamber == 0)
   {
     foreach my $p (@players)
     {
       next if ($p eq $player);
-      incStat('game', $p);
-      incStat('survive', $p);
+      $data->incStat('game', $p);
+      $data->incStat('survive', $p);
     }
-    incStat('game', $player);
-    incStat('death', $player);
-    incStat('kill');
-    push(@ret, 'BANG! ' . $player . ' has been shot!');
-    push(@ret, reload());
-    save();
+    $data->incStat('game', $player);
+    $data->incStat('death', $player);
+    $data->incStat('kill');
+
+    return ['BANG! ' . $player . ' has been shot!', reload()];
   }
   else
   {
-    incStat('click');
-    incStat('click', $player);
+    $data->incStat('click');
+    $data->incStat('click', $player);
     push(@players, $player) if (none {$_ eq $player} @players);
-    push(@ret, 'CLICK! Whose next?!');
+    return 'CLICK! Whose next?!';
   }
-  return \@ret;
 }
 
 sub help
