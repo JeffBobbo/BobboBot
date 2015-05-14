@@ -14,7 +14,7 @@ sub add
   my $nick = shift();
   my $where = shift();
   my $author = shift();
-  my $quote = shift();#join(@{shift()}, ' ');
+  my $quote = shift();
 
   if (!BobboBot::auth::check($nick, $where))
   {
@@ -48,7 +48,7 @@ sub run
   }
   else
   {
-    open(my $fh, '<', $source) or return 'Failed to open quote list: ' . $1;
+    open(my $fh, '<', $source) or return 'Failed to open quote list: ' . $!;
     my @lines = <$fh>;
     close($fh);
 
