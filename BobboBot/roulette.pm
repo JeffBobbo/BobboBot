@@ -70,7 +70,7 @@ sub run
     $data->incStat('click');
     $data->incStat('click', $player);
     push(@players, $player) if (none {$_ eq $player} @players);
-    return 'CLICK! Whose next?!';
+    return 'CLICK! Who\'s next?!';
   }
 }
 
