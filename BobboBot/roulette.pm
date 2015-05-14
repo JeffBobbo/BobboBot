@@ -10,8 +10,8 @@ use JSON qw(decode_json encode_json);
 use List::MoreUtils qw(none); # array searching
 
 my $chamber = floor(rand(6)) + 1;
-my @players;
 
+my @players;
 my $file = 'roulette.json';
 my $json;
 
@@ -40,13 +40,13 @@ sub save
 sub addPlayer
 {
   my $who = shift();
-  $json->{$who} = {survive => 0, death => 0, play => 0};
+  $json->{$who} = {survive => 0, death => 0, game => 0, click => 0};
 }
 
 sub getStat
 {
   my $stat = shift();
-  my $who = shift(); # can be undef (for reload)
+  my $who = shift(); # can be undef (for globals)
 
   if (defined $who)
   {
@@ -55,11 +55,12 @@ sub getStat
   }
   else
   {
-    $json->{global} = {} if (!defined $json->{global});
-    $json->{global}{$stat} = 0 if (!defined $json->{global}{$stat});
+    $json->{'@global'} = {} if (!defined $json->{'@global'});
+    $json->{'@global'}{$stat} = 0 if (!defined $json->{'@global'}{$stat});
     return $json->{$stat};
   }
 }
+
 sub incStat
 {
   my $stat = shift();
@@ -68,6 +69,11 @@ sub incStat
   if (defined $who)
   {
     addPlayer($who) if (!defined $json->{$who});
+    if (!defined $json->{$who}{$stat})
+    {
+      print 'Tried to increment invalid stat: ' . $stat . "\n";
+      return;
+    }
     return $json->{$who}{$stat}++;
   }
   else
@@ -81,7 +87,7 @@ sub incStat
 sub statList
 {
   my $what = shift();
-  return keys %{$json->{$what}} if (defined $json->{$what});
+  return sort(keys %{$json->{$what}}) if (defined $json->{$what});
   return ();
 }
 
@@ -98,7 +104,7 @@ sub run
   $json = load() if (!defined $json);
 
   my @args = @{$_[0]->{arg}};
-  if (defined $args[0] && $args[0] eq "stat")
+  if (defined $args[0] && ($args[0] eq "stat" || $args[0] eq "stats"))
   {
     my $player = $args[1] || undef;
 
@@ -115,7 +121,6 @@ sub run
       $ret = 'Overall stats: ';
     }
 
-    @stats = sort(@stats);
     $ret .= getStat($stats[0], $player) . ' ' . $stats[0] . (getStat($stats[0], $player) != 1 ? 's' : '');
     for (my $i = 1; $i < @stats; $i++)
     {
@@ -161,7 +166,7 @@ sub run
 sub help
 {
   return ['!roulette - Think you\'ve got good luck?',
-          '!roulette stat [player] - Retrieve stats'];
+          '!roulette stat [player] - Retrieve stats.'];
 }
 
 sub auth
