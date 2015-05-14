@@ -93,13 +93,13 @@ sub run
 
   if ($myLevel > $theirLevel)
   {
-    $lowerLimit = max(0, min($topLevel * (1.0 - $multiplier), $topLevel - $multiplier * 50.0));
-    $upperLimit = min(EFFECTIVE_MAX, max($topLevel / (1.0 - $multiplier), $topLevel + $multiplier * 50.0));
+    $lowerLimit = max(0, min($topLevel   * (1.0 - $multiplier), $topLevel    - $multiplier * 50.0));
+    $upperLimit = $multiplier == 1 ? EFFECTIVE_MAX : min(EFFECTIVE_MAX, max($topLevel    / (1.0 - $multiplier), $topLevel    + $multiplier * 50.0));
   }
   else
   {
     $lowerLimit = max(0, min($bottomLevel * (1.0 - $multiplier), $bottomLevel - $multiplier * 50.0));
-    $upperLimit = min(EFFECTIVE_MAX, max($bottomLevel / (1.0 - $multiplier), $bottomLevel + $multiplier * 50.0));
+    $upperLimit = $multiplier == 1 ? EFFECTIVE_MAX : min(EFFECTIVE_MAX, max($bottomLevel / (1.0 - $multiplier), $bottomLevel + $multiplier * 50.0));
   }
   $lowerLimit = floor($lowerLimit);
   $upperLimit = floor($upperLimit);
