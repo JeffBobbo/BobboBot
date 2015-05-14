@@ -92,7 +92,7 @@ sub run
 sub help
 {
   return ['!guess guess - Guess my number of 1 to 100!'.
-          '!guess stat [player] - Retrieve stats.'];
+          '!guess stat [player] - Retrieve game stats.'];
 }
 
 sub auth

@@ -169,7 +169,8 @@ sub help
 {
   return [
     '!mastermind guess - Make a guess at the secret code. The code is ' . CODE_LENGTH . ' 0\'s and 1\'s. Your input may include spaces',
-    '!mastermind new - Abandons the current game and resets for a new game.'
+    '!mastermind new - Abandons the current game and resets for a new game.',
+    '!mastermind stat [player] - Retrieve game stats.'
   ];
 }
 

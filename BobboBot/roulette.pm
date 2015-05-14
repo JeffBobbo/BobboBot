@@ -77,7 +77,7 @@ sub run
 sub help
 {
   return ['!roulette - Think you\'ve got good luck?',
-          '!roulette stat [player] - Retrieve stats.'];
+          '!roulette stat [player] - Retrieve game stats.'];
 }
 
 sub auth
