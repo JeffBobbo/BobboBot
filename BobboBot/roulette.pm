@@ -138,10 +138,10 @@ sub run
     foreach my $p (@players)
     {
       next if ($p eq $player);
-      incStat('play', $p);
+      incStat('game', $p);
       incStat('survive', $p);
     }
-    incStat('play', $player);
+    incStat('game', $player);
     incStat('death', $player);
     incStat('kill');
     save();
@@ -151,6 +151,7 @@ sub run
   else
   {
     incStat('click');
+    incStat('click', $player);
     push(@players, $player) if (none {$_ eq $player} @players);
     push(@ret, 'CLICK! Whose next?!');
   }
