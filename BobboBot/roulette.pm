@@ -135,8 +135,6 @@ sub run
   my @ret;
   if ($chamber == 0)
   {
-    push(@ret, 'BANG! ' . $player . ' has been shot!');
-    push(@ret, reload());
     foreach my $p (@players)
     {
       incStat('play', $p);
@@ -146,12 +144,14 @@ sub run
     incStat('death', $player);
     incStat('kill');
     save();
+    push(@ret, 'BANG! ' . $player . ' has been shot!');
+    push(@ret, reload());
   }
   else
   {
+    incStat('click');
     push(@players, $player) if (none {$_ eq $player} @players);
     push(@ret, 'CLICK! Whose next?!');
-    incStat('click');
   }
   return \@ret;
 }
