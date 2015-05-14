@@ -144,9 +144,9 @@ sub run
     incStat('game', $player);
     incStat('death', $player);
     incStat('kill');
-    save();
     push(@ret, 'BANG! ' . $player . ' has been shot!');
     push(@ret, reload());
+    save();
   }
   else
   {
