@@ -137,6 +137,7 @@ sub run
   {
     foreach my $p (@players)
     {
+      next if ($p eq $player);
       incStat('play', $p);
       incStat('survive', $p);
     }
