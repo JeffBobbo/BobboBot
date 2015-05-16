@@ -133,27 +133,23 @@ sub humanTime
   return $result;
 }
 
+
 sub timestamp
 {
   my $when = shift();
-  if (!defined $when || $when == 0)
-  {
-    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
-    if ($sec < 10)
-    {
-      $sec="0"."$sec";
-    }
-    if ($min < 10)
-    {
-      $min="0"."$min";
-    }
-    if ($hour < 10 )
-    {
-      $hour="0"."$hour";
-    }
-    return "$hour:$min:$sec";
-  }
+  $when = time() if (!defined $when || $when == 0);
 
+  my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime($when);
+#  $year += 1900; # make year YYYY format
+#  $mon  += 1; # mon range is 0..11
+  $hour += 1 if ($isdst);
+
+#  $mon  = '0' . $mon  if ($mon < 10);
+#  $mday = '0' . $mday if ($mday < 10);
+  $hour = '0' . $hour if ($hour < 10);
+  $min  = '0' . $min  if ($min < 10);
+  $sec  = '0' . $sec  if ($sec < 10);
+  return $hour . ':' . $min . ':' . $sec;
 }
 
 sub PC2Dec
