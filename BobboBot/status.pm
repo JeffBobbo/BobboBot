@@ -79,17 +79,39 @@ sub statusCheck
   my $server = shift();
   my $port   = shift();
 
-  print timestamp() . " statusCheck\n";
-  my $socket = IO::Socket::INET->new(Proto => 'tcp', PeerPort => $port, PeerAddr => $server);
-  if ($socket)
+  my $state = eval
   {
-    print timestamp() . " socket opened\n";
-    $socket->shutdown(2);
-    return 1;
-  }
-  print timestamp() . " socket closed\n";
-  $socket->close();
-  return 0;
+    local $SIG{ALRM} = sub { die "\n"; };
+    alarm 3;
+    my $sock = IO::Socket::INET->new(
+      PeerAddr => $server,
+      PeerPort => $port,
+      Proto => 'tcp',
+    );
+    alarm 0;
+    if ($sock)
+    {
+      $sock->shutdown(2);
+      $sock->close();
+      return 1;
+    }
+    return 0;
+  };
+
+  return $@ ? 0 : $state;
+
+#  print timestamp() . " statusCheck\n";
+#  my $socket = IO::Socket::INET->new(Proto => 'tcp', PeerPort => $port, PeerAddr => $server);
+#  if ($socket)
+#  {
+#    print timestamp() . " socket opened\n";
+#    $socket->shutdown(2);
+#    $socket->close();
+#    return 1;
+#  }
+#  print timestamp() . " socket closed\n";
+#  return 0;
+  return $state;
 }
 
 sub autoStatus # used by autoEvents in BobboBot.pl
