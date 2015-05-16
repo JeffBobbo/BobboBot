@@ -90,6 +90,7 @@ sub statusCheck
 
 sub autoStatus # used by autoEvents in BobboBot.pl
 {
+  print "autoStatus() start\n";
   my $statStr = "Automatic update: ";
   for my $x (0..$#{$info->{name}})
   {
@@ -124,6 +125,7 @@ sub autoStatus # used by autoEvents in BobboBot.pl
       }
     }
   }
+  print "autoStatus() end\n";
   if (length($statStr) > 18)
   {
     return $statStr;
