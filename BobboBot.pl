@@ -22,6 +22,7 @@ use BobboBot::savings;
 use BobboBot::condense;
 use BobboBot::pvp;
 use BobboBot::mod;
+use BobboBot::suit;
 # misc commands
 use BobboBot::fact;
 use BobboBot::proverb;
