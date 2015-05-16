@@ -79,18 +79,21 @@ sub statusCheck
   my $server = shift();
   my $port   = shift();
 
-  my $socket = IO::Socket::INET->new(Proto => 'tcp', PeerPort => $port, PeerAddr => $server) or return 0;
+  print timestamp() . " statusCheck\n";
+  my $socket = IO::Socket::INET->new(Proto => 'tcp', PeerPort => $port, PeerAddr => $server);
   if ($socket)
   {
+    print timestamp() . " socket opened\n";
     $socket->shutdown(2);
     return 1;
   }
+  print timestamp() . " socket closed\n";
+  $socket->close();
   return 0;
 }
 
 sub autoStatus # used by autoEvents in BobboBot.pl
 {
-  print "autoStatus() start\n";
   my $statStr = "Automatic update: ";
   for my $x (0..$#{$info->{name}})
   {
@@ -125,7 +128,6 @@ sub autoStatus # used by autoEvents in BobboBot.pl
       }
     }
   }
-  print "autoStatus() end\n";
   if (length($statStr) > 18)
   {
     return $statStr;
