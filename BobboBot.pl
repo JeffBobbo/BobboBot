@@ -154,7 +154,7 @@ sub irc_001 {
     }
     $irc->yield(join => $chan);
   }
-  $lastMsg = $lastPing = time();
+  $lastPing = time();
   $kernel->delay(autoEvents => 4);
   return;
 }
@@ -293,15 +293,6 @@ sub irc_public
 
   if ($command =~ s/^!([^!].*)$/$1/)
   {
-    if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($who, $target))
-    {
-      return;
-    }
-    $lastMsg = time();
-    if ($config->getValue("silent") == 2 && !BobboBot::auth::check($who, $target))
-    {
-      return;
-    }
     runCommands($command, $who, $target, ($config->getValue("silent") ? NOTICE : PUBLIC));
     return;
   }
@@ -317,15 +308,6 @@ sub irc_notice
 
   if ($msg =~ s/^!([^!].*)$/$1/)
   {
-    if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($who, $target))
-    {
-      return;
-    }
-    $lastMsg = time();
-    if ($config->getValue("silent") == 2 && !BobboBot::auth::check($who, $target))
-    {
-      return;
-    }
     runCommands($msg, $who, $target, NOTICE);
     return;
   }
@@ -342,15 +324,6 @@ sub irc_msg
 
   if ($msg =~ s/^!([^!].*)$/$1/)
   {
-    if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($who, $target))
-    {
-      return;
-    }
-    $lastMsg = time();
-    if ($config->getValue("silent") == 2 && !BobboBot::auth::check($who, $target))
-    {
-      return;
-    }
     runCommands($msg, $who, $target, PRIVMSG);
     return;
   }
@@ -375,6 +348,15 @@ sub runCommands
     $where = $nick;
     $form = 'privmsg'
   }
+
+  if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($nick, $where))
+  {
+    my $remain = ($lastMsg + $config->getValue("msgRate")) - time();
+    $irc->yield('notice', $nick, 'Flood control in effect for ' . $remain . ($remain != 1 ? 's' : '') . '.');
+    return;
+  }
+  $lastMsg = time();
+
   print STDOUT "who: $nick, target: $where, form: $form, msg: $command\n";
 
   ($command, my @arg) = split(' ', $command);
