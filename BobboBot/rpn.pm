@@ -98,7 +98,7 @@ sub run
     }
 
     my $num = $operators->{$stack[$op]}->{ops};
-    if (!defined $op || $op < $num)
+    if (!defined $op || !defined $num || $op < $num)
     {
       return 'Malformed expression';
     }
