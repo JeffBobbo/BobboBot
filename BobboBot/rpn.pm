@@ -97,10 +97,11 @@ sub run
       }
     }
 
+    return 'Malformed expression: missing operator.' if (!defined $op);
     my $num = $operators->{$stack[$op]}->{ops};
-    if (!defined $op || !defined $num || $op < $num)
+    if ($op < $num)
     {
-      return 'Malformed expression';
+      return 'Malformed expression: not enough arguments, expected ' . $num . '.';
     }
 
     if ($operators->{$stack[$op]})
