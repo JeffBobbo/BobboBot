@@ -31,14 +31,19 @@ my $operators = {
   'tan' => { ops => 1, fn => sub { return sin($_[0]) / cos($_[0]) } }, # sin(x)/cos(x) == tan(x)
   'deg' => { ops => 1, fn => sub { return $_[0] * 180 / Pi() } },
   'rad' => { ops => 1, fn => sub { return $_[0] * Pi() / 180 } },
-  'pi' => { ops => 0, fn => sub { return Pi() } },
   'last' => { ops => 0, fn => sub { return defined $last ? $last : 0 } },
   'sqrt' => { ops => 1, fn => sub { return sqrt($_[0]) } },
   'root' => { ops => 2, fn => sub { return $_[0] ** (1 / $_[1]) } },
   'log' => { ops => 1, fn => sub { return log($_[0]) } },
   'log10' => { ops => 1, fn => sub { return log($_[0]) / log(10) } }, # fix this
   'logN' => { ops => 2, fn => sub { return log($_[0]) / log($_[1]) } },
-  'e' => { ops => 0, fn => sub { return exp(1) } }
+
+  #constants
+  'pi' => { ops => 0, fn => sub { return Pi() } },
+  'e' => { ops => 0, fn => sub { return exp(1) } },
+  'c' => { ops => 0, fn => sub { return 2.997924580e8 } },
+  'g' => { ops => 0, fn => sub { return 9.81 } },
+  'G' => { ops => 0, fn => sub { return 6.67384e-11 } }
 };
 
 sub ops
