@@ -45,7 +45,7 @@ sub run
   else
   {
     my $who = $_[0]->{who};
-    return $who . '\'s access level: ' . accessName(checkAccess($who, $where)) . '.';
+    return 'Your current access level is ' . accessName(checkAccess($who, $where)) . '.';
   }
 }
 
