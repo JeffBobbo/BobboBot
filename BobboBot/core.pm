@@ -5,6 +5,7 @@ package BobboBot::core;
 use warnings;
 use strict;
 
+use BobboBot::users;
 use POSIX;
 
 my $source = 'core.list';
@@ -29,7 +30,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('core', 'run', \&BobboBot::core::run);

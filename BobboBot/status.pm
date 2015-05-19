@@ -6,6 +6,7 @@ use warnings;
 use strict;
 
 use BobboBot::math;
+use BobboBot::users;
 use IO::Socket::INET; # sockets
 
 require Exporter;
@@ -79,16 +80,12 @@ sub statusCheck
   my $server = shift();
   my $port   = shift();
 
-  my $state = eval
+  my $state = eval # slightly evil, in eval so that we can do easy timeout
   {
-    local $SIG{ALRM} = sub { die "\n"; };
-    alarm 3;
-    my $sock = IO::Socket::INET->new(
-      PeerAddr => $server,
-      PeerPort => $port,
-      Proto => 'tcp',
-    );
-    alarm 0;
+    local $SIG{ALRM} = sub { die "Timed out\n"; };
+    alarm(3);
+    my $sock = IO::Socket::INET->new(PeerAddr => $server, PeerPort => $port, Proto => 'tcp');
+    alarm(0);
     if ($sock)
     {
       $sock->shutdown(2);
@@ -97,21 +94,7 @@ sub statusCheck
     }
     return 0;
   };
-
-  return $@ ? 0 : $state;
-
-#  print timestamp() . " statusCheck\n";
-#  my $socket = IO::Socket::INET->new(Proto => 'tcp', PeerPort => $port, PeerAddr => $server);
-#  if ($socket)
-#  {
-#    print timestamp() . " socket opened\n";
-#    $socket->shutdown(2);
-#    $socket->close();
-#    return 1;
-#  }
-#  print timestamp() . " socket closed\n";
-#  return 0;
-  return $state;
+  return $@ ? 0 : $state; # if we died, return 0, otherwise whatever we got
 }
 
 sub autoStatus # used by autoEvents in BobboBot.pl
@@ -159,7 +142,7 @@ sub autoStatus # used by autoEvents in BobboBot.pl
 
 sub auth
 {
-  return 0;
+  return accessLevel('utils');
 }
 
 BobboBot::command::add('status', 'run', \&BobboBot::status::run);

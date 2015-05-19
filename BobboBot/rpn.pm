@@ -2,6 +2,8 @@
 
 package BobboBot::rpn;
 
+use BobboBot::users;
+
 use warnings;
 use strict;
 
@@ -135,7 +137,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('rpn', 'run', \&BobboBot::rpn::run);

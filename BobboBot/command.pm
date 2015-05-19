@@ -9,7 +9,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(commands list isValidCommand commandsList);
 
-our $commands = {};
+my $commands = {};
 
 use constant {
   WHO => 0,

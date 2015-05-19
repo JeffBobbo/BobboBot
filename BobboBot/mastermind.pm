@@ -8,6 +8,7 @@ use strict;
 use POSIX;
 use List::MoreUtils qw(none);
 use BobboBot::math;
+use BobboBot::users;
 use BotData;
 
 use constant {
@@ -176,7 +177,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('mastermind', 'run', \&BobboBot::mastermind::run);

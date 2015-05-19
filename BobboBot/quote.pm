@@ -5,6 +5,8 @@ package BobboBot::quote;
 use warnings;
 use strict;
 
+use BobboBot::users;
+
 use POSIX;
 
 my $source = 'quote.list';
@@ -16,7 +18,7 @@ sub add
   my $author = shift();
   my $quote = shift();
 
-  if (!BobboBot::auth::check($nick, $where))
+  if (checkAccess($nick, $where) < accessLevel('op'))
   {
     return 'Permission denied.';
   }
@@ -67,7 +69,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('quote', 'run', \&BobboBot::quote::run);

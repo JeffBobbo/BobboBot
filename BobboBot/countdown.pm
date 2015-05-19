@@ -6,6 +6,7 @@ use warnings;
 use strict;
 
 use JSON qw(decode_json encode_json);
+use BobboBot::users;
 use BobboBot::math;
 
 my $file = 'countdowns.json';
@@ -116,7 +117,7 @@ sub run
   }
   elsif ($what eq 'set' || $what eq 'add')
   {
-    if (BobboBot::auth::check($_[0]->{who}, $_[0]->{where}) == 0)
+    if (checkAccess($_[0]->{who}, $_[0]->{where}) < accessLevel('op'))
     {
       return 'Permission denied.';
     }
@@ -164,7 +165,7 @@ sub run
   }
   elsif ($what eq 'del')
   {
-    if (BobboBot::auth::check($_[0]->{who}, $_[0]->{where}) == 0)
+    if (checkAccess($_[0]->{who}, $_[0]->{where}) < accessLevel('op'))
     {
       return 'Permission denied.';
     }
@@ -182,9 +183,9 @@ sub run
   }
   elsif ($what eq 'save')
   {
-    if (BobboBot::auth::check($_[0]->{who}, $_[0]->{where}) == 0)
+    if (checkAccess($_[0]->{who}, $_[0]->{where}) < accessLevel('op'))
     {
-      return 'Permissiong denied.';
+      return 'Permission denied.';
     }
     if (save() == 1)
     {
@@ -194,9 +195,9 @@ sub run
   }
   elsif ($what eq 'reload')
   {
-    if (BobboBot::auth::check($_[0]->{who}, $_[0]->{where}) == 0)
+    if (checkAccess($_[0]->{who}, $_[0]->{where}) < accessLevel('op'))
     {
-      return 'Permissiong denied.';
+      return 'Permission denied.';
     }
     $json = load();
     if (defined $json)
@@ -292,7 +293,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('utils');
 }
 
 BobboBot::command::add('countdown', 'run', \&BobboBot::countdown::run);

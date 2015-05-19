@@ -8,6 +8,7 @@ use strict;
 use POSIX;
 use List::MoreUtils qw(none); # array searching
 use BobboBot::math;
+use BobboBot::users;
 use BotData;
 
 my $number = pickNumber();
@@ -97,7 +98,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('guess', 'run', \&BobboBot::guess::run);

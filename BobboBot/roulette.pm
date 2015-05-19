@@ -8,6 +8,7 @@ use strict;
 use POSIX;
 use List::MoreUtils qw(none); # array searching
 use BotData;
+use BobboBot::users;
 
 my $chamber = load();
 
@@ -82,7 +83,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('roulette', 'run', \&BobboBot::roulette::run);

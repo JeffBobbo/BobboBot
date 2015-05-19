@@ -42,7 +42,7 @@ use BobboBot::config;
 use BobboBot::channels;
 use BobboBot::logger;
 # auth stuff
-use BobboBot::auth;
+use BobboBot::access;
 use BobboBot::users;
 use BobboBot::shutdown;
 use BobboBot::restart;
@@ -54,7 +54,7 @@ $| = 1;
 
 my $config = Config->new('bot.conf');
 $config->read();
-readUsers('auth.conf');
+readUsers('access.conf');
 
 loadChannels("channels.conf");
 
@@ -349,10 +349,10 @@ sub runCommands
     $form = 'privmsg'
   }
 
-  if (time() < ($lastMsg + $config->getValue("msgRate")) && !BobboBot::auth::check($nick, $where))
+  if (time() < ($lastMsg + $config->getValue("msgRate")) && checkAccess($nick, $where) < accessLevel('op'))
   {
     my $remain = ($lastMsg + $config->getValue("msgRate")) - time();
-    $irc->yield('notice', $nick, 'Flood control in effect for ' . $remain . ($remain != 1 ? 's' : '') . '.');
+    $irc->yield('privmsg', $nick, 'Flood control in effect for ' . $remain . ($remain != 1 ? 's' : '') . '.');
     return;
   }
   $lastMsg = time();
@@ -370,9 +370,16 @@ sub runCommands
 
   if (isValidCommand($command) == 1)
   {
-    if (commands()->{$command}{auth}() && BobboBot::auth::check($nick, $where) == 0)
+    if (checkAccess($nick, $where) < commands()->{$command}{auth}())
     {
-      $irc->yield($form, $where, 'Permission denied.');
+      if (commands()->{$command}{auth}() > 0)
+      {
+        $irc->yield($form, $where, 'Permission denied.');
+      }
+      else
+      {
+        $irc->yield('privmsg', $nick, 'You are on my ignore list.');
+      }
     }
     else
     {

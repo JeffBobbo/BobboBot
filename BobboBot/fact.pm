@@ -5,6 +5,7 @@ package BobboBot::fact;
 use warnings;
 use strict;
 
+use BobboBot::users;
 use LWP::Simple;
 
 sub run
@@ -28,7 +29,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('fact', 'run', \&BobboBot::fact::run);

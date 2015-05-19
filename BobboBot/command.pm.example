@@ -4,6 +4,7 @@ package BobboBot::MOD_NAME;
 
 use warnings;
 use strict;
+use BobboBot::users;
 
 # writing new commands is pretty easy as long as you know perl
 #
@@ -43,16 +44,16 @@ sub help
   return '!MOD_NAME - echoes arguments supplied';
 }
 
-# tells !list if this command needs auth, but isn't used for anything else
-# auth-requiringness is automatically test before call run().
+# tells !list if this command needs an access level,
+# access level is automatically tested before calling run().
 # If only one part of the command (like the add functions of countdown or quote), you must explicitly
 # test for auth, and have auth return 0. To test for auth use this:
-# if (BobboBot::auth::check($_nick[0]->{who}, $_[0]->{where}) == 1)
+# if (checkAccess($_nick[0]->{who}, $_[0]->{where}) < accessLevel('level'))
 # alternatively you can assign the who and where members to local variables like $nick and $where
 # to save some tpying if you need those variables again
 sub auth
 {
-  return 0; # if this command requires auth, return 1 instead
+  return accessLevel('utils'); # ignore, utils, normal or op
 }
 
 BobboBot::command::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);

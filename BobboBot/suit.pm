@@ -6,6 +6,7 @@ use warnings;
 use strict;
 
 use BobboBot::math;
+use BobboBot::users;
 use POSIX;
 
 use constant {
@@ -46,7 +47,8 @@ sub run
 
   my $caLevel = shift(@arg) || 0;
   return 'Not a number for Colonial Administration level.' if (isNumber($caLevel) == 0);
-  return 'Can\'t have a fraction of a level.' if (floor($caLevel) != $caLevel);
+  return 'Can\'t have a skill trained to a negative level.' if ($caLevel < 0);
+  return 'Can\'t have a fraction of a skill.' if (floor($caLevel) != $caLevel);
 
   $suitability = min(MAX_SUIT, $suitability * (1 + $caLevel * CA_BONUS));
 
@@ -60,7 +62,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('utils');
 }
 
 BobboBot::command::add('suit', 'run', \&BobboBot::suit::run);

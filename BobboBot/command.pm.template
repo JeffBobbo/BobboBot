@@ -4,6 +4,7 @@ package BobboBot::MOD_NAME;
 
 use warnings;
 use strict;
+use BobboBot::users;
 
 sub run
 {
@@ -17,7 +18,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('utils');
 }
 
 BobboBot::command::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);

@@ -6,6 +6,7 @@ use warnings;
 use strict;
 
 use BobboBot::math;
+use BobboBot::users;
 use POSIX;
 
 sub run
@@ -60,7 +61,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('mod', 'run', \&BobboBot::mod::run);

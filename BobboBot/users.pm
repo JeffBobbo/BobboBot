@@ -7,20 +7,29 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(userEvent readUsers writerUsers checkUsers hasAuth);
+our @EXPORT = qw(userEvent readUsers writeUsers checkUsers userAccess userIdentified accessLevel accessName);
 
-my @auth; # list from file
-my @ident; # those in @auth and ID'd
+
+my $levels = {
+  ignore => -2,
+  utils  => -1,
+  normal => 0,
+  op     => 1
+};
+
+my $access = {}; # list from file
+my @ident; # those who're ID'd
 
 sub readUsers
 {
   my $file = shift();
 
-  open(my $fh, '<', $file) or return;
+  open(my $fh, '<', $file) or die "Couldn't open file: $!\n";
   while (<$fh>)
   {
     chomp();
-    push(@auth, $_);
+    my ($who, $level) = split(': ');
+    $access->{$who} = accessLevel($level);
   }
   close($fh);
 }
@@ -29,19 +38,19 @@ sub writeUsers
 {
   my $file = shift();
 
-  open(my $fh, '>', $file) or return;
-  foreach my $user (@auth)
+  open(my $fh, '>', $file) or die "Couldn't open file: $!\n";
+  foreach my $who (keys %{$access})
   {
-    print $fh $user . "\n";
+    print $fh $who . ': ' . $access->{$who} . "\n";
   }
   close($fh);
 }
 
 sub checkUsers
 {
-  foreach my $user (@auth)
+  foreach my $who (keys %{$access})
   {
-    $main::irc->yield('who', $user);
+    $main::irc->yield('who', $who);
   }
 }
 
@@ -91,15 +100,47 @@ sub userEvent
   }
 }
 
-sub hasAuth
+sub userIdentified
 {
   my $nick = shift();
 
   foreach my $dude (@ident)
   {
-    return 1 if ($nick eq $dude);
+    if ($nick eq $dude)
+    {
+      return $access->{$nick} if ($access->{$nick});
+    }
   }
-  return 0;
+  return $levels->{'normal'};
+}
+
+sub userAccess
+{
+  my $nick = shift();
+
+  if ($access->{$nick})
+  {
+    return $access->{$nick};
+  }
+  return $levels->{'normal'};
+}
+
+sub accessLevel
+{
+  my $level = shift();
+
+  return defined $levels->{$level} ? $levels->{$level} : undef;
+}
+
+sub accessName
+{
+  my $level = shift();
+
+  foreach my $key (keys %{$levels})
+  {
+    return $key if ($levels->{$key} == $level);
+  }
+  return 'Unknown access level: ' . $level;
 }
 
 1;

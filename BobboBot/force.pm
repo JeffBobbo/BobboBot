@@ -5,6 +5,7 @@ package BobboBot::force;
 use warnings;
 use strict;
 
+use BobboBot::users;
 use BobboBot::status;
 
 sub run
@@ -19,7 +20,7 @@ sub help
 
 sub auth
 {
-  return 1;
+  return accessLevel('op');
 }
 
 BobboBot::command::add('force', 'run', \&BobboBot::force::run);

@@ -5,6 +5,8 @@ package BobboBot::shutdown;
 use warnings;
 use strict;
 
+use BobboBot::users;
+
 sub run
 {
   $main::cleanExit = 1;
@@ -19,7 +21,7 @@ sub help
 
 sub auth
 {
-  return 1;
+  return accessLevel('op');
 }
 
 BobboBot::command::add('shutdown', 'run', \&BobboBot::shutdown::run);

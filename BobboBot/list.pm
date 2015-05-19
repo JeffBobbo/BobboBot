@@ -4,17 +4,20 @@ package BobboBot::list;
 
 use warnings;
 use strict;
+use BobboBot::users;
+
+use BobboBot::command;
 
 sub run
 {
-  my @keys = sort(BobboBot::command::commandsList());
+  my @keys = sort(commandsList());
   my $list = "";
   if (@keys >= 1)
   {
     $list .= $keys[0];
     for (my $i = 1; $i < @keys; $i++)
     {
-      $list .= ', ' . $keys[$i] . (BobboBot::command::commands()->{$keys[$i]}{auth}() ? '*' : '');
+      $list .= ', ' . $keys[$i] . (commands()->{$keys[$i]}{auth}() >= accessLevel('op') ? '*' : '');
     }
   }
   return 'Available commands: ' . $list . '. See !help [command] for more information.';
@@ -27,7 +30,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('utils');
 }
 
 BobboBot::command::add('list', 'run', \&BobboBot::list::run);

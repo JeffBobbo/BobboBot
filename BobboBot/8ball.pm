@@ -4,6 +4,7 @@ package BobboBot::8ball;
 
 use warnings;
 use strict;
+use BobboBot::users;
 
 use POSIX;
 
@@ -81,7 +82,7 @@ sub help
 
 sub auth
 {
-  return 0;
+  return accessLevel('normal');
 }
 
 BobboBot::command::add('8ball', 'run', \&BobboBot::8ball::run);
