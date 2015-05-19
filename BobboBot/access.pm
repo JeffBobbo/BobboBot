@@ -52,7 +52,7 @@ sub run
 sub help
 {
   return ['!access [target] - Checks access level of target if provided, otherwise yourself.',
-          '!access (command) - Retrieves the acccess level you need for a command.'];
+          '!access command - Retrieves the acccess level you need for a command.'];
 }
 
 sub auth
