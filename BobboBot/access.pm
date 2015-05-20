@@ -10,7 +10,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(checkAccess);
 
 use BobboBot::command;  # commands(), isValidCommand()
-use BobboBot::users qw(levels);    # accessLevel, accessName, userIdentified, userAccess
+use BobboBot::users;    # accessLevel, accessName, userIdentified, userAccess
 use BobboBot::channels; # channelData()
 
 my $default = 'normal'; #%BobboBot::users::levels{'normal'};
