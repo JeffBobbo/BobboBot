@@ -10,7 +10,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(checkAccess);
 
 use BobboBot::command;  # commands(), isValidCommand()
-use BobboBot::users;    # accessLevel, accessName, userIdentified, userAccess
+use BobboBot::users qw(levels);    # accessLevel, accessName, userIdentified, userAccess
 use BobboBot::channels; # channelData()
 
 my $default = 'normal'; #%BobboBot::users::levels{'normal'};
@@ -22,7 +22,7 @@ sub checkAccess
 
   if (defined channelData($targ) && channelData($targ)->{key} ne "")
   {
-    return level('op');
+    return accessLevel('op');
   }
   return userIdentified($nick);
 }
