@@ -17,6 +17,7 @@ my $levels = {
   op     => 1
 };
 
+my $default = 'utils';
 my $access = {}; # list from file
 my @ident; # those who're ID'd
 
@@ -111,7 +112,7 @@ sub userIdentified
       return $access->{$nick} if ($access->{$nick});
     }
   }
-  return $levels->{'normal'};
+  return $levels->{$default};
 }
 
 sub userAccess
@@ -122,7 +123,7 @@ sub userAccess
   {
     return $access->{$nick};
   }
-  return $levels->{'normal'};
+  return $levels->{$default};
 }
 
 sub accessLevel
