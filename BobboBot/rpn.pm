@@ -79,7 +79,7 @@ sub run
         last;
       }
     }
-    if ($arg !~ /^_?[0-9]+$/ && !defined $op)
+    if ($arg !~ /^_?[0-9\.]+$/ && !defined $op)
     {
       return 'Malformed or unknown argument: `' . $arg . '`, operators and operands must be separated';
     }
