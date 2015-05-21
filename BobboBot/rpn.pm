@@ -32,8 +32,8 @@ my $operators = {
   'deg' => { ops => 1, fn => sub { return $_[0] * 180 / Pi() } },
   'rad' => { ops => 1, fn => sub { return $_[0] * Pi() / 180 } },
   'last' => { ops => 0, fn => sub { return defined $last ? $last : 0 } },
-  'sqrt' => { ops => 1, fn => sub { return sqrt($_[0]) } },
-  'root' => { ops => 2, fn => sub { return $_[0] ** (1 / $_[1]) } },
+  'sqrt' => { ops => 1, fn => sub { return sqrt(abs($_[0])) } },
+  'root' => { ops => 2, fn => sub { return abs($_[0]) ** (1 / $_[1]) } },
   'log' => { ops => 1, fn => sub { return log($_[0]) } },
   'log10' => { ops => 1, fn => sub { return log($_[0]) / log(10) } }, # fix this
   'logN' => { ops => 2, fn => sub { return log($_[0]) / log($_[1]) } },
@@ -89,50 +89,62 @@ sub run
     }
   }
 
-  while (@stack > 1)
+  my $result = eval
   {
-    my $op;
-    for (my $i = 0; $i < @stack && !defined $op; $i++)
+    while (@stack > 1)
     {
-      foreach my $operator (keys %{$operators})
+      my $op;
+      for (my $i = 0; $i < @stack && !defined $op; $i++)
       {
-        if ($operator eq $stack[$i])
+        foreach my $operator (keys %{$operators})
         {
-          $op = $i;
-          last;
+          if ($operator eq $stack[$i])
+          {
+            $op = $i;
+            last;
+          }
         }
       }
-    }
 
-    return 'Malformed expression: missing operator.' if (!defined $op);
-    my $num = $operators->{$stack[$op]}->{ops};
-    if ($op < $num)
-    {
-      return 'Malformed expression: not enough arguments, expected ' . $num . '.';
-    }
+      return 'Malformed expression: missing operator.' if (!defined $op);
+      my $num = $operators->{$stack[$op]}->{ops};
+      if ($op < $num)
+      {
+        return 'Malformed expression: not enough arguments, expected ' . $num . '.';
+      }
 
-    if ($operators->{$stack[$op]})
-    {
-      if ($stack[$op] eq '/' && $stack[$op - 1] == 0) # manually test div/0
+      if ($operators->{$stack[$op]})
       {
-        return 'Error: div/0';
+        if ($stack[$op] eq '/' && $stack[$op - 1] == 0) # manually test div/0
+        {
+          return 'Error: div/0';
+        }
+        my @ops;
+        for (my $x = $num; $x >= 1; $x--)
+        {
+          push(@ops, $stack[$op - $x]);
+        }
+        $stack[$op - $num] = $operators->{$stack[$op]}->{fn}(@ops);
+        splice(@stack, $op - ($num - 1), $num);
       }
-      my @ops;
-      for (my $x = $num; $x >= 1; $x--)
+      else # should never happen
       {
-        push(@ops, $stack[$op - $x]);
+        return 'Uknnown operator: ' . $stack[$op];
       }
-      $stack[$op - $num] = $operators->{$stack[$op]}->{fn}(@ops);
-      splice(@stack, $op - ($num - 1), $num);
     }
-    else # should never happen
-    {
-      return 'Uknnown operator: ' . $stack[$op];
-    }
+    return $stack[0];
+  };
+
+  if ($@)
+  {
+    print STDERR 'RPN FAILED: ' . $@ . "\n";
+    return 'Fatal error: ' . $@ . '.';
   }
-
-  $last = $stack[0];
-  return 'Result: ' . $stack[0];
+  else
+  {
+    $last = $stack[0];
+    return 'Result: ' . $result;
+  }
 }
 
 sub help
