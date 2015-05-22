@@ -83,7 +83,7 @@ sub statusCheck
   my $state = eval # slightly evil, in eval so that we can do easy timeout
   {
     local $SIG{ALRM} = sub { die "Timed out\n"; };
-    alarm(3);
+    alarm(5);
     my $sock = IO::Socket::INET->new(PeerAddr => $server, PeerPort => $port, Proto => 'tcp');
     alarm(0);
     if ($sock)
