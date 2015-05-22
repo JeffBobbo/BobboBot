@@ -13,12 +13,12 @@ my $source = 'quote.list';
 
 sub add
 {
-  my $nick = shift();
+  my $who = shift();
   my $where = shift();
   my $author = shift();
   my $quote = shift();
 
-  if (checkAccess($nick, $where) < accessLevel('op'))
+  if (checkAccess($who, $where) < accessLevel('op'))
   {
     return 'Permission denied.';
   }

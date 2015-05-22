@@ -7,6 +7,7 @@ use strict;
 
 use JSON qw(decode_json encode_json);
 use BobboBot::users;
+use BobboBot::access;
 use BobboBot::math;
 
 my $file = 'countdowns.json';
@@ -281,10 +282,9 @@ sub help
           '!countdown add|set event channel when repeat "desc" [alerts] - Add or change an event, when and repeat in unix epoch, -1 if non repeating.',
           '!countdown del event - Remove an event',
           '!countdown reload - Reload the countdown configuration.',
-          '!countdown save - Manually save the countdown configuration.'
           );
 
-  if (BobboBot::auth::check($_[0]->{who}, $_[0]->{where}) == 0)
+  if (checkAccess($_[0]->{who}, $_[0]->{where}) == 0)
   {
     return [$a[0], $a[1]];
   }

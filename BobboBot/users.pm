@@ -7,7 +7,7 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(userEvent readUsers writeUsers checkUsers userAccess userIdentified accessLevel accessName);
+our @EXPORT = qw(userEvent readUsers writeUsers checkUsers userAccess userIdentified modifyAccess accessLevel accessName);
 
 
 my $levels = {
@@ -17,15 +17,14 @@ my $levels = {
   op     => 1
 };
 
-my $default = 'utils';
+my $default = 'normal';
 my $access = {}; # list from file
 my @ident; # those who're ID'd
+my $file = 'access.conf';
 
 sub readUsers
 {
-  my $file = shift();
-
-  open(my $fh, '<', $file) or die "Couldn't open file: $!\n";
+  open(my $fh, '<', $file) or return "Couldn't open file: $!\n";
   while (<$fh>)
   {
     chomp();
@@ -37,34 +36,34 @@ sub readUsers
 
 sub writeUsers
 {
-  my $file = shift();
-
-  open(my $fh, '>', $file) or die "Couldn't open file: $!\n";
+  open(my $fh, '>', $file) or return "Couldn't open file: $!\n";
   foreach my $who (keys %{$access})
   {
-    print $fh $who . ': ' . $access->{$who} . "\n";
+    print $fh $who . ': ' . accessName($access->{$who}) . "\n";
   }
   close($fh);
+  return undef;
 }
 
 sub checkUsers
 {
   foreach my $who (keys %{$access})
   {
-    $main::irc->yield('who', $who);
+    my ($nick) = split('!', $who);
+    $main::irc->yield('who', $nick);
   }
 }
 
 sub userEvent
 {
-  my $nick = shift();
+  my $who = shift();
   my $what = shift();
   my $extra = shift();
 
   my $id = -1; # find if we already have him
   for my $i (0..$#ident)
   {
-    if ($ident[$i] eq $nick)
+    if ($ident[$i] eq $who)
     {
       $id = $i;
       last;
@@ -75,11 +74,11 @@ sub userEvent
   {
     if ($extra =~ /r/)
     {
-      push(@ident, $nick) if ($id == -1);
+      push(@ident, $who) if ($id == -1);
     }
     else
     {
-      splice(@ident, $nick) if ($id != -1);
+      splice(@ident, $id, 1) if ($id != -1);
     }
   }
   if ($what eq 'QUIT' && $id != -1)
@@ -103,34 +102,88 @@ sub userEvent
 
 sub userIdentified
 {
-  my $nick = shift();
+  my $who = shift();
 
   foreach my $dude (@ident)
   {
-    if ($nick eq $dude)
+    if (userMatch($who, $dude))
     {
-      return $access->{$nick} if ($access->{$nick});
+      return $access->{$dude} if ($access->{$dude});
+    }
+  }
+  return undef;
+}
+
+sub userMatch
+{
+  my $user = shift();
+  my $dude = shift();
+
+  $user .= '!*' if (index($user, '!') == -1); # if there's no username, add it
+  $user .= '@*' if (index($user, '@') == -1); # if there's no hostmask, add it
+  $dude .= '!*' if (index($dude, '!') == -1);
+  $dude .= '@*' if (index($dude, '@') == -1);
+
+  #regexify
+  $user =~ s/\?/./g;
+  $user =~ s/\*/.*/g;
+  $dude =~ s/\?/./g;
+  $dude =~ s/\*/.*/g;
+
+  $dude = '^' . $dude . '$'; # anchors to enforce a full match
+
+  return $user =~ $dude; # test!
+}
+
+sub userAccess
+{
+  my $who = shift();
+
+  foreach my $dude (keys %{$access})
+  {
+    if ($dude !~ /.+!.+@.+/)
+    {
+      my $idd = userIdentified($who);
+      return $idd if (defined $idd);
+    }
+    else
+    {
+      if (userMatch($who, $dude))
+      {
+        return $access->{$dude} if ($access->{$dude});
+      }
     }
   }
   return $levels->{$default};
 }
 
-sub userAccess
+sub modifyAccess
 {
-  my $nick = shift();
+  my $user = shift();
+  my $level = shift();
+  my $action = shift();
 
-  if ($access->{$nick})
+#  return 'Invalid user, format: nick!user@mask.' if ($user !~ /.+!.+@.+/);
+  return 'Unknown level.' if (!defined accessLevel($level));
+  return 'Invalid action, ' . $action . '.' if ($action ne 'set' && $action ne 'del');
+
+  if ($action eq 'del')
   {
-    return $access->{$nick};
+    delete $access->{$user};
   }
-  return $levels->{$default};
+  elsif ($action eq 'set')
+  {
+    $access->{$user} = accessLevel($level);
+  }
+
+  return writeUsers();
 }
 
 sub accessLevel
 {
-  my $level = shift();
+  my $name = shift();
 
-  return defined $levels->{$level} ? $levels->{$level} : undef;
+  return defined $levels->{$name} ? $levels->{$name} : undef;
 }
 
 sub accessName
@@ -141,7 +194,12 @@ sub accessName
   {
     return $key if ($levels->{$key} == $level);
   }
-  return 'Unknown access level: ' . $level;
+  return undef;
+}
+
+sub levels
+{
+  return $levels;
 }
 
 1;

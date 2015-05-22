@@ -34,15 +34,14 @@ sub logEvent
 
 sub logMsg
 {
-  my $nick   = shift();
-  my $host   = shift();
+  my $who   = shift();
   my $target = shift();
   my $msg    = shift();
 
   my (undef, undef, undef, $mday, $mon, $year) = localtime(time);
   $year += 1900;
   $mon += 1;
-  my $logmsg = "[" . timestamp() . "] <$target:$nick!$host> $msg";
+  my $logmsg = "[" . timestamp() . "] <$target:$who> $msg";
 
   open(my $log, '>>', "$logdir/$year-$mon-$mday") or die "Couldn't open file to write log in log dir: $!\n";
   print $log $logmsg, "\n";

@@ -54,7 +54,7 @@ $| = 1;
 
 my $config = Config->new('bot.conf');
 $config->read();
-readUsers('access.conf');
+readUsers();
 
 loadChannels("channels.conf");
 
@@ -161,10 +161,9 @@ sub irc_001 {
 
 sub irc_352 # WHO resp
 {
-  my $nick = $_[ARG2][4];
+  my $who = $_[ARG2][4] . '!' . $_[ARG2][1] . '@' . $_[ARG2][2];
   my $modes = $_[ARG2][5];
-  userEvent($nick, 'WHO', $modes);
-  return;
+  userEvent($_[ARG2][4], 'WHO', $modes);
 }
 
 sub irc_433 # nick in use
@@ -189,13 +188,7 @@ sub irc_mode
   my $modes    = $_[ARG2] || "";
   my $operands = $_[ARG3] || "";
 
-  if ($target eq $irc->nick_name())
-  {
-    return;
-  }
-
   logEvent("$who at $target set modes $modes $operands");
-  return;
 }
 
 sub irc_join
@@ -210,14 +203,13 @@ sub irc_join
     {
       $irc->yield('privmsg', 'chanserv', $channel . ' ' . channelData($channel)->{op});
     }
-    return;
+  }
+  else
+  {
+    userEvent($nick, 'JOIN');
   }
 
-  userEvent($nick, 'JOIN');
-
   logEvent("$nick ($host) joined $channel", $channel);
-
-  return;
 }
 
 sub irc_part
@@ -227,13 +219,7 @@ sub irc_part
   my $msg     = $_[ARG2] || "";
   my ($nick, $host) = (split '!', $user);
 
-  if ($nick eq $irc->nick_name())
-  {
-    return;
-  }
-
   logEvent("$nick ($host) left $channel ($msg)", $channel);
-  return;
 }
 
 sub irc_quit
@@ -243,15 +229,12 @@ sub irc_quit
   my $msg     = $_[ARG2] || "";
   my ($nick, $host) = (split '!', $user);
 
-  if ($nick eq $irc->nick_name())
+  if ($nick ne $irc->nick_name())
   {
-    return;
+    userEvent($nick, 'QUIT');
   }
 
-  userEvent($nick, 'QUIT');
-
   logEvent("$nick ($host) quit $channel ($msg)", $channel);
-  return;
 }
 
 sub irc_kick
@@ -285,9 +268,8 @@ sub irc_nick
 sub irc_public
 {
   my ($who, $target, $msg) = @_[ARG0..ARG2];
-  ($who, my $host) = (split '!', $who);
   $target = @{$target}[0];
-  logMsg($who, $host, $target, $msg);
+  logMsg($who, $target, $msg);
   $msg = sanitizeString($msg, 0);
   my $command = sanitizeString($msg, 1);
 
@@ -302,7 +284,6 @@ sub irc_public
 sub irc_notice
 {
   my ($who, $target, $msg) = @_[ARG0..ARG2];
-  ($who, my $host) = (split '!', $who);
   $target = @{$target}[0];
   $msg = sanitizeString($msg, 1);
 
@@ -317,7 +298,6 @@ sub irc_notice
 sub irc_msg
 {
   my ($who, $target, $msg) = @_[ARG0..ARG2];
-  ($who, my $host) = (split '!', $who);
   $target = @{$target}[0];
   $msg = sanitizeString($msg, 1);
 
@@ -332,8 +312,9 @@ sub irc_msg
 
 sub runCommands
 {
-  my ($command, $nick, $where, $form) = @_;
+  my ($command, $who, $where, $form) = @_;
 
+  my ($nick) = split('!', $who);
   if ($form == NOTICE)
   {
     $where = $nick;
@@ -349,10 +330,10 @@ sub runCommands
     $form = 'privmsg'
   }
 
-  if (time() < ($lastMsg + $config->getValue("msgRate")) && checkAccess($nick, $where) < accessLevel('op'))
+  if (time() < ($lastMsg + $config->getValue("msgRate")) && checkAccess($who, $where) < accessLevel('op'))
   {
     my $remain = ($lastMsg + $config->getValue("msgRate")) - time();
-    $irc->yield('privmsg', $nick, 'Flood control in effect for ' . $remain . ($remain != 1 ? 's' : '') . '.');
+    $irc->yield('privmsg', $nick, 'Flood control in effect for ' . $remain . 's.');
     return;
   }
   $lastMsg = time();
@@ -362,7 +343,7 @@ sub runCommands
   ($command, my @arg) = split(' ', $command);
 
   my $args = {
-    'who'   => $nick,
+    'who'   => $who,
     'where' => $where,
     'form'  => $form,
     'arg'   => \@arg
@@ -370,7 +351,7 @@ sub runCommands
 
   if (isValidCommand($command) == 1)
   {
-    if (checkAccess($nick, $where) < commands()->{$command}{auth}())
+    if (checkAccess($who, $where) < commands()->{$command}{auth}())
     {
       if (commands()->{$command}{auth}() > 0)
       {
@@ -383,34 +364,42 @@ sub runCommands
     }
     else
     {
-      my $response = commands()->{$command}{run}($args);
-      if (ref($response) eq 'ARRAY')
+      my $response = eval { commands()->{$command}{run}($args) };
+      if ($@)
       {
-        foreach my $r (@{$response})
+        $irc->yield('privmsg', $where, 'ERROR: ' . $@);
+        print STDERR 'ERROR: ' . $@ . "\n";
+      }
+      else
+      {
+        if (ref($response) eq 'ARRAY')
         {
-          if (ref($r) eq 'HASH')
+          foreach my $r (@{$response})
           {
-            if ($r->{type} eq 'ACTION')
+            if (ref($r) eq 'HASH')
             {
-              $irc->yield(ctcp => $where => 'ACTION ' . $r->{text}) if (length($r->{text}));
+              if ($r->{type} eq 'ACTION')
+              {
+                $irc->yield(ctcp => $where => 'ACTION ' . $r->{text}) if (length($r->{text}));
+              }
+            }
+            else
+            {
+              $irc->yield($form, $where, $r) if (length($r));
             }
           }
-          else
+        }
+        elsif (ref($response) eq 'HASH')
+        {
+          if ($response->{type} eq 'ACTION')
           {
-            $irc->yield($form, $where, $r) if (length($r));
+            $irc->yield(ctcp => $where => 'ACTION ' . $response->{text}) if (length($response->{text}));
           }
         }
-      }
-      elsif (ref($response) eq 'HASH')
-      {
-        if ($response->{type} eq 'ACTION')
+        else # scalar
         {
-          $irc->yield(ctcp => $where => 'ACTION ' . $response->{text}) if (length($response->{text}));
+          $irc->yield($form, $where, $response) if (length($response));
         }
-      }
-      else # scalar
-      {
-        $irc->yield($form, $where, $response) if (length($response));
       }
     }
   }
@@ -436,6 +425,7 @@ sub autoEvents
   {
     my $irc = $heap->{irc};
     $irc->yield(connect => {});
+    $kernel->delay(autoEvents => $config->getValue("autoEventsInterval")); # set this again, incase connect fails
     return; # we don't want to do the other stuff yet
   }
 
