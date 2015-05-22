@@ -137,12 +137,12 @@ sub run
 
   if ($@)
   {
-    print STDERR 'RPN FAILED: ' . $@ . "\n";
-    return 'Fatal error: ' . $@ . '.';
+    print STDERR 'ERROR: ' . $@ . "\n";
+    return 'ERROR: ' . $@ . '.';
   }
   else
   {
-    $last = $stack[0];
+    $last = $result;
     return 'Result: ' . $result;
   }
 }
