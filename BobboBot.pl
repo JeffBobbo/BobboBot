@@ -23,6 +23,7 @@ use BobboBot::condense;
 use BobboBot::pvp;
 use BobboBot::mod;
 use BobboBot::suit;
+use BobboBot::extract;
 # misc commands
 use BobboBot::fact;
 use BobboBot::proverb;
