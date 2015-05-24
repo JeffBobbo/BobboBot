@@ -104,7 +104,8 @@ sub autoStatus # used by autoEvents in BobboBot.pl
   {
     if (statusCheck($info->{addr}[$x], $info->{port}[$x]))
     {
-      if ($info->{status}[$x] == 0) {
+      if ($info->{status}[$x] == 0)
+      {
         if (statusCheck($info->{addr}[$x], $info->{port}[$x]))
         {
           $statStr .= "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is up. ";
