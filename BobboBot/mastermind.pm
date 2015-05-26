@@ -145,19 +145,19 @@ sub run
 
     if ($guesses >= MAX_ATTEMPTS)
     {
-      return ['Too bad! You didn\'t work it out. The code was ' . codePrint() . '.', restart()];
-    }
-    if ($bulls == 9)
-    {
       foreach my $p (@players)
       {
         $data->incStat('play', $p);
         next if ($p eq $player);
         $data->incStat('lose', $p);
       }
-      $data->incStat('win', $player);
+      $data->incStat($bulls == 9 ? 'win' : 'lose', $player);
 
-      return ['Well done ' . $player . '! You got the code right in ' . $guesses . ' attemp' . ($guesses != 1 ? 's.' : '.'), restart()];
+      if ($bulls == 9)
+      {
+        return ['Well done ' . $player . '! You got the code right in ' . $guesses . ' attemp' . ($guesses != 1 ? 's.' : '.'), restart()];
+      }
+      return ['Too bad! You didn\'t work it out. The code was ' . codePrint() . '.', restart()];
     }
     else
     {
