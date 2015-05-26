@@ -17,34 +17,25 @@ sub run
 
   return "Flag must be at 1 or higher" if ($flag <= 0);
 
-  my @modNames = qw(Angelic Reinforced Superintelligent Buffered Gyroscopic Forceful Overclocked Transcendental Superconducting Evil Workhorse Rewired Amplified Intelligent Docktastic Resonating Sleek Radioactive Amorphous Dynamic Scoped Extended Shielded Composite Miniaturized);
-  my @modFlag = (0x1000000, 0x800000, 0x400000, 0x200000, 0x100000 , 0x80000 , 0x40000 , 0x20000, 0x10000, 0x8000 , 0x4000 , 0x2000, 0x1000, 0x800, 0x400, 0x200, 0x100, 0x80, 0x40, 0x20, 0x10, 0x8, 0x4, 0x2, 0x1);
+  my @modNames = qw(Miniaturized Composite Shielded Extended Scoped Dynamic Amorphous Radioactive Sleek Resonating Docktastic Intelligent Amplified Rewired Workhorse Evil Superconducting Transcendental Overclocked Forceful Gyroscopic Buffered Superintelligent Reinforced Angelic);
 
   my $high = 0;
-  for my $x (0..$#modFlag)
+  for (my $i = 0; $i < @modNames; $i++)
   {
-    $high += $modFlag[$x];
+    $high |= (1 << $i);
   }
 
-  if ($flag > $high) # make sure they provided a possible value
-  {
-    return "Error: The highest possible bitflag value is $high.";
-  }
+  return "Error: The highest possible bitflag value is $high." if ($flag > $high); # make sure they provided a possible value
 
   my $result = "";
 
-  for my $x (0..$#modNames)
+  for (my $i = 0; $i < @modNames; $i++)
   {
-    my $value = $modFlag[$x];
-    my $name = $modNames[$x];
-    if (($flag-$value) >= 0)
+    my $name = $modNames[$i];
+    if ($flag & (1 << $i))
     {
-      if (length($result) > 0)
-      {
-        $result .= ", ";
-      }
-      $result .= "$name";
-      $flag -= $value;
+      $result .= ", " if (length($result) > 0);
+      $result .= $name;
     }
   }
   if ($result ne '')
