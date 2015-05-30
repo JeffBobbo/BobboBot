@@ -39,10 +39,10 @@ my $operators = {
   'logN' => { ops => 2, fn => sub { return log($_[0]) / log($_[1]) } },
   '<<' => { ops => 2, fn => sub { return $_[0] << $_[1]} },
   '>>' => { ops => 2, fn => sub { return $_[0] >> $_[1]} },
-  '&' => { ops => 2, fn => sub { return $_[0] & $_[0] } },
-  '|' => { ops => 2, fn => sub { return $_[0] | $_[0] } },
-  '^' => { ops => 2, fn => sub { return $_[0] ^ $_[0] } },
-  '~' => { ops => 1, fn => sub { return ~$_[0] } },
+  'AND' => { ops => 2, fn => sub { return $_[0] & $_[0] } },
+  'OR' => { ops => 2, fn => sub { return $_[0] | $_[0] } },
+  'XOR' => { ops => 2, fn => sub { return $_[0] ^ $_[0] } },
+  'NOT' => { ops => 1, fn => sub { return ~$_[0] } },
 
   #constants
   'pi' => { ops => 0, fn => sub { return Pi() } },
