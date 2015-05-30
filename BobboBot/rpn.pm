@@ -26,7 +26,7 @@ my $operators = {
   'sin' => { ops => 1, fn => sub { return sin($_[0]) } },
   'asin' => { ops => 1, fn => sub { return atan2($_[0], sqrt(1 - $_[0] * $_[0])) } },
   'acos' => { ops => 1, fn => sub { return atan2(sqrt(1 - $_[0] * $_[0]), $_[0]) } },
-  'atan2' => { ops => 2, fn => sub { return atan2($_[0], $_[0]) } },
+  'atan2' => { ops => 2, fn => sub { return atan2($_[0], $_[1]) } },
   'cos' => { ops => 1, fn => sub { return cos($_[0]) } },
   'tan' => { ops => 1, fn => sub { return sin($_[0]) / cos($_[0]) } }, # sin(x)/cos(x) == tan(x)
   'deg' => { ops => 1, fn => sub { return $_[0] * 180 / Pi() } },
@@ -39,6 +39,10 @@ my $operators = {
   'logN' => { ops => 2, fn => sub { return log($_[0]) / log($_[1]) } },
   '<<' => { ops => 2, fn => sub { return $_[0] << $_[1]} },
   '>>' => { ops => 2, fn => sub { return $_[0] >> $_[1]} },
+  '&' => { ops => 2, fn => sub { return $_[0] & $_[0] } },
+  '|' => { ops => 2, fn => sub { return $_[0] | $_[0] } },
+  '^' => { ops => 2, fn => sub { return $_[0] ^ $_[0] } },
+  '~' => { ops => 1, fn => sub { return ~$_[0] } },
 
   #constants
   'pi' => { ops => 0, fn => sub { return Pi() } },
