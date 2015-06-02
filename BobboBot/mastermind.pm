@@ -105,7 +105,7 @@ sub postGuess
 
 sub run
 {
-  my $player = $_[0]->{who};
+  my ($player) = split('!', $_[0]->{who});
   my @args = @{$_[0]->{arg}};
 
   if (defined $args[0] && $args[0] eq 'new')

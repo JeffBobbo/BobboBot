@@ -49,7 +49,7 @@ sub run
     return ""; # do nothing if not in public
   }
 
-  my $player = $_[0]->{who};
+  my ($player) = split('!', $_[0]->{who});
 
   $chamber--;
   if ($chamber == 0)
