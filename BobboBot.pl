@@ -78,6 +78,7 @@ our $irc = POE::Component::IRC->spawn(
   Server   => $config->getValue("addr"),
   Port     => $config->getValue("port"),
   Flood    => 1,
+  debug    => 1
 ) or die "Failed to create PoCo object: $!\n";
 
 POE::Session->create(
@@ -143,7 +144,7 @@ sub irc_001 {
 
   my $ns = Config->new('ns.conf');
   $ns->read();
-  $irc->yield('privmsg', 'nickserv', "identify " . $ns->getValue("nspass"));
+  $irc->yield('privmsg', 'nickserv', 'identify ' . $ns->getValue("nspass"));
 
   foreach my $chan (channelList())
   {
@@ -426,10 +427,20 @@ sub autoEvents
   {
     my $irc = $heap->{irc};
     $irc->yield(connect => {});
-    $kernel->delay(autoEvents => $config->getValue("autoEventsInterval")); # set this again, incase connect fails
+    $kernel->delay(autoEvents => $config->getValue('autoEventsInterval')); # set this again, incase connect fails
     return; # we don't want to do the other stuff yet
   }
 
+  # check if I'm me
+  if ($irc->nick_name() ne $config->getValue('nick'))
+  {
+    my $ns = Config->new('ns.conf');
+    $ns->read();
+    $irc->yield('privmsg', 'nickserv', 'ghost ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
+    $irc->yield(nick => $config->getValue('nick'));
+    $kernel->delay(autoEvents => 2);
+    return; # return early so we don't overwrite this or do status checks twice quickly
+  }
 
   # do server status checks
   my $string = autoStatus();
