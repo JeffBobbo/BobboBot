@@ -86,7 +86,7 @@ sub run
     }
     $data->incStat('win', $player);
 
-    return ['Well done, ' . $player . ', you guessed it! It took ' . $guesses . ' guesses to get it!', think()];
+    return ['Well done, you guessed it! It took ' . $guesses . ' guesses to get it!', think()];
   }
 }
 

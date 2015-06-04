@@ -155,7 +155,7 @@ sub run
 
       if ($bulls == 9)
       {
-        return ['Well done ' . $player . '! You got the code right in ' . $guesses . ' attemp' . ($guesses != 1 ? 's.' : '.'), restart()];
+        return ['Well done! You got the code right in ' . $guesses . ' attemp' . ($guesses != 1 ? 's.' : '.'), restart()];
       }
       return ['Too bad! You didn\'t work it out. The code was ' . codePrint() . '.', restart()];
     }

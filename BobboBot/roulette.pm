@@ -64,7 +64,7 @@ sub run
     $data->incStat('death', $player);
     $data->incStat('kill');
 
-    return ['BANG! ' . $player . ' has been shot!', reload()];
+    return ['BANG! You\'ve has been shot!', reload()];
   }
   else
   {

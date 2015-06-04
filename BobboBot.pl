@@ -357,7 +357,7 @@ sub runCommands
     {
       if (commands()->{$command}{auth}() > 0)
       {
-        $irc->yield($form, $where, 'Permission denied.');
+        $irc->yield($form, $where, $nick . ': Permission denied.');
       }
       else
       {
@@ -369,7 +369,7 @@ sub runCommands
       my $response = eval { commands()->{$command}{run}($args) };
       if ($@)
       {
-        $irc->yield('privmsg', $where, 'ERROR: ' . $@);
+        $irc->yield('privmsg', $where, $nick . ': ERROR: ' . $@);
         print STDERR 'ERROR: ' . $@ . "\n";
       }
       else
@@ -387,7 +387,7 @@ sub runCommands
             }
             else
             {
-              $irc->yield($form, $where, $r) if (length($r));
+              $irc->yield($form, $where, $nick . ': ' . $r) if (length($r));
             }
           }
         }
@@ -400,21 +400,20 @@ sub runCommands
         }
         else # scalar
         {
-          $irc->yield($form, $where, $response) if (length($response));
+          $irc->yield($form, $where, $nick . ': ' . $response) if (length($response));
         }
       }
     }
   }
   else
   {
-    $irc->yield($form, $where, "Unknown command, see !list");
+    $irc->yield($form, $where, $nick . ': Unknown command, see !list');
   }
 }
 
 sub irc_shutdown
 {
   _stop();
-#  exit(0);
 }
 
 sub autoEvents
