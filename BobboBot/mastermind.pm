@@ -143,7 +143,7 @@ sub run
 
     postGuess($guess, \$bulls, \$cows);
 
-    if ($guesses >= MAX_ATTEMPTS)
+    if ($bulls == 9 || $guesses >= MAX_ATTEMPTS)
     {
       foreach my $p (@players)
       {
@@ -169,7 +169,7 @@ sub run
 sub help
 {
   return [
-    '!mastermind guess - Make a guess at the secret code. The code is ' . CODE_LENGTH . ' 0\'s and 1\'s. Your input may include spaces',
+    '!mastermind guess - Make a guess at the secret code. The code is ' . CODE_LENGTH . ' 0\'s and 1\'s. Your input may include spaces. How to play: http://en.wikipedia.org/wiki/Bulls_and_cows',
     '!mastermind new - Abandons the current game and resets for a new game.',
     '!mastermind stat [player] - Retrieve game stats.'
   ];
