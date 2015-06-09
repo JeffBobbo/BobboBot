@@ -82,7 +82,7 @@ sub statusCheck
 
   my $state = eval # slightly evil, in eval so that we can do easy timeout
   {
-    local $SIG{ALRM} = sub { die "Timed out\n"; };
+    local $SIG{ALRM} = sub { print timestamp() . " statusCheck timed out\n"; die "Timed out\n"; };
     alarm(5);
     my $sock = IO::Socket::INET->new(PeerAddr => $server, PeerPort => $port, Proto => 'tcp');
     alarm(0);
@@ -94,7 +94,7 @@ sub statusCheck
     }
     return 0;
   };
-  return $@ ? 0 : $state; # if we died, return 0, otherwise whatever we got
+  return $@ ? -1 : $state; # if we died, return -1, otherwise whatever we got
 }
 
 sub autoStatus # used by autoEvents in BobboBot.pl
@@ -106,7 +106,7 @@ sub autoStatus # used by autoEvents in BobboBot.pl
     {
       if ($info->{status}[$x] == 0)
       {
-        if (statusCheck($info->{addr}[$x], $info->{port}[$x]))
+        if (statusCheck($info->{addr}[$x], $info->{port}[$x]) == 1)
         {
           $statStr .= "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is up. ";
           $info->{status}[$x] = 1;
@@ -119,7 +119,7 @@ sub autoStatus # used by autoEvents in BobboBot.pl
     {
       if ($info->{status}[$x] == 1)
       {
-        if (!statusCheck($info->{addr}[$x], $info->{port}[$x]))
+        if (statusCheck($info->{addr}[$x], $info->{port}[$x]) == 0)
         {
           $statStr .=  "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is down";
           if ($info->{start}[$x] != 0)
