@@ -436,8 +436,9 @@ sub autoEvents
     my $ns = Config->new('ns.conf');
     $ns->read();
     $irc->yield('privmsg', 'nickserv', 'ghost ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
+    $irc->yield('privmsg', 'nickserv', 'release ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
     $irc->yield(nick => $config->getValue('nick'));
-    $kernel->delay(autoEvents => 2);
+    $kernel->delay(autoEvents => 1);
     return; # return early so we don't overwrite this or do status checks twice quickly
   }
 
