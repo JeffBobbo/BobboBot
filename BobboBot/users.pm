@@ -49,8 +49,8 @@ sub checkUsers
 {
   foreach my $who (keys %{$access})
   {
-    my ($nick) = split('!', $who);
-    $main::irc->yield('who', $nick);
+    next if (index($who, '!') != -1); # only check the nickserv entries
+    $main::irc->yield('who', $who);
   }
 }
 
