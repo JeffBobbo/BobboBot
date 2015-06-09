@@ -88,6 +88,7 @@ POE::Session->create(
       "_stop",
       "irc_001", # connect
       "irc_352", # who
+      "irc_432", # nick being held
       "irc_433", # nick in use
       "irc_join",
       "irc_part",
@@ -166,6 +167,11 @@ sub irc_352 # WHO resp
   my $who = $_[ARG2][4] . '!' . $_[ARG2][1] . '@' . $_[ARG2][2];
   my $modes = $_[ARG2][5];
   userEvent($_[ARG2][4], 'WHO', $modes);
+}
+
+sub irc_432 # nick being held
+{
+  $irc->yield(nick => $config->getValue('nick') . '_');
 }
 
 sub irc_433 # nick in use
@@ -438,7 +444,7 @@ sub autoEvents
     $irc->yield('privmsg', 'nickserv', 'ghost ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
     $irc->yield('privmsg', 'nickserv', 'release ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
     $irc->yield(nick => $config->getValue('nick'));
-    $kernel->delay(autoEvents => 1);
+    $kernel->delay(autoEvents => 2);
     return; # return early so we don't overwrite this or do status checks twice quickly
   }
 
