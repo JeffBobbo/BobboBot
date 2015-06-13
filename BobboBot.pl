@@ -361,7 +361,7 @@ sub runCommands
   {
     if (checkAccess($who, $where) < commands()->{$command}{auth}())
     {
-      if (commands()->{$command}{auth}() > 0)
+      if (commands()->{$command}{auth}() > accessLevel('ignore'))
       {
         $irc->yield($form, $where, $nick . ': Permission denied.');
       }
