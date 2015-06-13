@@ -14,6 +14,7 @@ use BobboBot::command;
 # bobbobot util commands
 use BobboBot::list;
 use BobboBot::help;
+use BobboBot::alias;
 # ss util commands
 use BobboBot::status;
 use BobboBot::ration;
@@ -59,6 +60,10 @@ readUsers();
 
 loadChannels("channels.conf");
 
+# load alias
+BobboBot::alias::load();
+
+# message stuff
 my $lastMsg  = -1;
 my $lastPing = -1;
 my $lastPong = -1;
@@ -357,7 +362,8 @@ sub runCommands
     'arg'   => \@arg
   };
 
-  if (isValidCommand($command) == 1)
+  $command = lookupAlias($command); # automatically check for an alias
+  if (isValidCommand($command) != 0)
   {
     if (checkAccess($who, $where) < commands()->{$command}{auth}())
     {

@@ -10,14 +10,18 @@ use BobboBot::command;
 
 sub run
 {
-  my @keys = sort(commandsList());
+  my @keys = commandsList();
+  push(@keys, aliasesList());
+  @keys = sort(@keys);
   my $list = "";
-  if (@keys >= 1)
+  if (@keys > 0)
   {
-    $list .= $keys[0];
+    my $com = isValidCommand($keys[0]) == 2 ? lookupAlias($keys[0]) : $keys[0];
+    $list .= $keys[0] . (commands()->{$com}{auth}() >= accessLevel('op') ? '*' : isValidCommand($keys[0]) == 2 ? ' (> ' . lookupAlias($com) . ')' : '');
     for (my $i = 1; $i < @keys; $i++)
     {
-      $list .= ', ' . $keys[$i] . (commands()->{$keys[$i]}{auth}() >= accessLevel('op') ? '*' : '');
+      my $com = isValidCommand($keys[$i]) == 2 ? lookupAlias($keys[$i]) : $keys[$i];
+      $list .= ', ' . $keys[$i] . (commands()->{$com}{auth}() >= accessLevel('op') ? '*' : isValidCommand($keys[$i]) == 2 ? ' (> ' . lookupAlias($com) . ')' : '');
     }
   }
   return 'Available commands: ' . $list . '. See !help [command] for more information.';

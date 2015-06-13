@@ -7,9 +7,10 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(commands list isValidCommand commandsList);
+our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand);
 
 my $commands = {};
+my $aliases = {};
 
 use constant {
   WHO => 0,
@@ -24,10 +25,7 @@ sub add
   my $which = shift();
   my $function = shift();
 
-  if ($which ne "run" && $which ne "help" && $which ne "auth")
-  {
-    return;
-  }
+  return if ($which ne "run" && $which ne "help" && $which ne "auth");
 
   $commands->{$name}{$which} = $function;
 }
@@ -42,17 +40,34 @@ sub commandsList
   return keys %{$commands};
 }
 
+sub setAliases
+{
+  $aliases = {};
+  $aliases = shift() if (@_);
+}
+
+sub aliases
+{
+  return $aliases;
+}
+
+sub aliasesList
+{
+  return keys %{$aliases}
+}
+
+sub lookupAlias
+{
+  my $alias = shift();
+  return aliases()->{$alias} || $alias; # if this isn't one, return what we gave
+}
+
 sub isValidCommand
 {
   my $com = shift();
 
-  foreach my $key (commandsList())
-  {
-    if ($com eq $key)
-    {
-      return 1;
-    }
-  }
+  return 2 if (aliases()->{$com});
+  return 1 if (commands()->{$com});
   return 0;
 }
 
