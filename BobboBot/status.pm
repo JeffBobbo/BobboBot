@@ -40,11 +40,10 @@ sub run
   {
     for my $x (0..$#{$info->{name}})
     {
-      if (lc($info->{name}[$x]) ne $server)
-      {
-        next;
-      }
-      if (statusCheck($info->{addr}[$x], $info->{port}[$x]))
+      next if (lc($info->{name}[$x]) ne $server);
+
+      my $status = statusCheck($info->{addr}[$x], $info->{port}[$x]);
+      if ($status == 1)
       {
         if ($info->{start}[$x] != 0)
         {
@@ -52,19 +51,33 @@ sub run
         }
         return "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is running.";
       }
-      return "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is down.";
+      elsif ($status == 0)
+      {
+        return "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is down.";
+      }
+      else
+      {
+        return "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) timed out.";
+      }
     }
     return "It didn't work for some reason, did you give a correct option? (Liberty, Livetest, Test or all)";
   }
   my $result = "";
   for my $x (0..$#{$info->{name}})
   {
-    if (statusCheck($info->{addr}[$x], $info->{port}[$x]))
+    my $status = statusCheck($info->{addr}[$x], $info->{port}[$x]);
+    if ($status == 1)
     {
       $result .= "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is running. ";
-      next;
     }
-    $result .= "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is down. ";
+    elsif ($status == 0)
+    {
+      $result .= "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) is down. ";
+    }
+    else
+    {
+      $result .= "$info->{name}[$x] ($info->{addr}[$x]:$info->{port}[$x]) timed out. ";
+    }
   }
   return $result;
 }
@@ -102,7 +115,8 @@ sub autoStatus # used by autoEvents in BobboBot.pl
   my $statStr = "Automatic update: ";
   for my $x (0..$#{$info->{name}})
   {
-    if (statusCheck($info->{addr}[$x], $info->{port}[$x]))
+    my $status = statusCheck($info->{addr}[$x], $info->{port}[$x]);
+    if ($status == 1)
     {
       if ($info->{status}[$x] == 0)
       {
@@ -115,7 +129,7 @@ sub autoStatus # used by autoEvents in BobboBot.pl
         sleep(2);
       }
     }
-    else
+    elsif ($status == 0)
     {
       if ($info->{status}[$x] == 1)
       {
