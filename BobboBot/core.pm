@@ -20,7 +20,7 @@ sub run
 
   for (my $i = @lines - 1; $i >= 0; --$i)
   {
-    splice(@lines, $i, 1) if ($lines[$i] !~ /$match/i);
+    splice(@lines, $i, 1) if (defined $match && $lines[$i] !~ /$match/i);
   }
 
   return 'No quotes found!' if (@lines == 0);
