@@ -150,7 +150,7 @@ sub irc_001 {
 
   my $ns = Config->new('ns.conf');
   $ns->read();
-  $irc->yield('privmsg', 'nickserv', 'identify ' . $ns->getValue("nspass"));
+  $irc->yield('privmsg', 'nickserv', 'identify ' . $ns->getValue("nspass")) if (length($ns->getValue("nspass")));
 
   foreach my $chan (channelList())
   {
@@ -447,12 +447,15 @@ sub autoEvents
   {
     my $ns = Config->new('ns.conf');
     $ns->read();
-    $irc->yield('privmsg', 'nickserv', 'ghost ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
-    $irc->yield('privmsg', 'nickserv', 'release ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
-    $irc->yield(nick => $config->getValue('nick'));
-    $irc->yield('privmsg', 'nickserv', 'identify ' . $ns->getValue("nspass"));
-    $kernel->delay(autoEvents => 2);
-    return; # return early so we don't overwrite this or do status checks twice quickly
+    if (length($ns->getValue("nspass")))
+    {
+      $irc->yield('privmsg', 'nickserv', 'ghost ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
+      $irc->yield('privmsg', 'nickserv', 'release ' . $config->getValue('nick') . ' ' . $ns->getValue("nspass"));
+      $irc->yield(nick => $config->getValue('nick'));
+      $irc->yield('privmsg', 'nickserv', 'identify ' . $ns->getValue("nspass"));
+      $kernel->delay(autoEvents => 2);
+      return; # return early so we don't overwrite this or do status checks twice quickly
+    }
   }
 
   # do server status checks
