@@ -68,6 +68,8 @@ my $lastMsg  = -1;
 my $lastPing = -1;
 my $lastPong = -1;
 
+my $lastMsgs = {};
+
 our $cleanExit = 0; # 1 for shutdown, 2 for restart
 
 use constant {
@@ -290,6 +292,18 @@ sub irc_public
   {
     runCommands($command, $who, $target, ($config->getValue("silent") ? NOTICE : PUBLIC));
     return;
+  }
+
+  if ($lastMsgs->{$who} && $lastMsgs->{$who}{msg} eq $msg)
+  {
+    $lastMsgs->{$who}{count}++;
+    $irc->yield('privmsg', $target, 'Warning: Repeating is not allowed.') if ($lastMsgs->{$who}{count} == 3);
+    $irc->yield('kick', $target, substr($who, 0, index($who, '!')), 'Repeating is not allowed.') if ($lastMsgs->{$who}{count} > 3);
+  }
+  else
+  {
+    $lastMsgs->{$who}{count} = 1;
+    $lastMsgs->{$who}{msg} = $msg;
   }
   return;
 }
