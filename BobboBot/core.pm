@@ -12,20 +12,24 @@ my $source = 'core.list';
 
 sub run
 {
+  my $match = shift(@{$_[0]->{arg}});
+
   open(my $fh, '<', $source) or return 'Failed to open core list: ' . $1;
   my @lines = <$fh>;
   close($fh);
 
-  if (@lines == 0)
+  for (my $i = @lines - 1; $i >= 0; --$i)
   {
-    return 'No cores!';
+    splice(@lines, $i, 1) if ($lines[$i] !~ /$match/i);
   }
+
+  return 'No quotes found!' if (@lines == 0);
   return $lines[floor(rand(@lines))];
 }
 
 sub help
 {
-  return '!core - Returns a quote from a Portal core';
+  return '!core [search] - Returns a quote from a Portal core, regex enabled search';
 }
 
 sub auth
