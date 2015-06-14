@@ -343,7 +343,7 @@ sub runCommands
     $form = 'privmsg'
   }
 
-  if (time() < ($lastMsg + $config->getValue("msgRate")) && checkAccess($who, $where) < accessLevel('op'))
+  if (index('#', $where) != -1 && time() < ($lastMsg + $config->getValue("msgRate")) && checkAccess($who, $where) < accessLevel('op'))
   {
     my $remain = ($lastMsg + $config->getValue("msgRate")) - time();
     $irc->yield('privmsg', $nick, 'Flood control in effect for ' . $remain . 's.');
