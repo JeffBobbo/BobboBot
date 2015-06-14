@@ -80,7 +80,7 @@ sub run
 
 sub help
 {
-  return '!alias - ';
+  return '!alias [set|del] alias [target] - Add/remove an alias, or return the current target of alias';
 }
 
 sub auth
