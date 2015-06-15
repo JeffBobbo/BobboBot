@@ -12,7 +12,7 @@ my $source = 'core.list';
 
 sub run
 {
-  my $match = shift(@{$_[0]->{arg}});
+  my $match = join(' ', @{$_[0]->{arg}});
 
   open(my $fh, '<', $source) or return 'Failed to open core list: ' . $1;
   my @lines = <$fh>;
