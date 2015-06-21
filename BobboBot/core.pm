@@ -12,7 +12,7 @@ my $source = 'core.list';
 
 sub run
 {
-  my $match = shift(@{$_[0]->{arg}});
+  my $match = join(' ', @{$_[0]->{arg}});
 
   open(my $fh, '<', $source) or return 'Failed to open core list: ' . $1;
   my @lines = <$fh>;
@@ -20,7 +20,7 @@ sub run
 
   for (my $i = @lines - 1; $i >= 0; --$i)
   {
-    splice(@lines, $i, 1) if (defined $match && $lines[$i] !~ /$match/i);
+    splice(@lines, $i, 1) if (length($match) && $lines[$i] !~ /$match/i);
   }
 
   return 'No quotes found!' if (@lines == 0);
