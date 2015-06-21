@@ -43,6 +43,7 @@ my $operators = {
   'OR' => { ops => 2, fn => sub { return $_[0] | $_[0] } },
   'XOR' => { ops => 2, fn => sub { return $_[0] ^ $_[0] } },
   'NOT' => { ops => 1, fn => sub { return ~$_[0] } },
+  'time' => { ops => 0, fn => sub { return time() } },
 
   #constants
   'pi' => { ops => 0, fn => sub { return Pi() } },
@@ -89,7 +90,7 @@ sub run
     {
       return 'Malformed or unknown argument: `' . $arg . '`, operators and operands must be separated';
     }
-    elsif ($arg =~ /^_[0-9]+$/)
+    elsif ($arg =~ /^_[0-9\.]+$/)
     {
       $arg =~ s/_/-/g;
     }
