@@ -21,36 +21,43 @@ my $operators = {
   '/' => { ops => 2, fn => sub { return $_[0] / $_[1] } },
   '^' => { ops => 2, fn => sub { return $_[0] ** $_[1] } },
   '%' => { ops => 2, fn => sub { return $_[0] % $_[1] } },
-  'min' => { ops => 2, fn => sub { return $_[0] < $_[1] ? $_[0] : $_[1] } },
-  'max' => { ops => 2, fn => sub { return $_[0] > $_[1] ? $_[0] : $_[1] } },
-  'sin' => { ops => 1, fn => sub { return sin($_[0]) } },
-  'asin' => { ops => 1, fn => sub { return atan2($_[0], sqrt(1 - $_[0] * $_[0])) } },
-  'acos' => { ops => 1, fn => sub { return atan2(sqrt(1 - $_[0] * $_[0]), $_[0]) } },
-  'atan2' => { ops => 2, fn => sub { return atan2($_[0], $_[1]) } },
-  'cos' => { ops => 1, fn => sub { return cos($_[0]) } },
-  'tan' => { ops => 1, fn => sub { return sin($_[0]) / cos($_[0]) } }, # sin(x)/cos(x) == tan(x)
-  'deg' => { ops => 1, fn => sub { return $_[0] * 180 / Pi() } },
-  'rad' => { ops => 1, fn => sub { return $_[0] * Pi() / 180 } },
-  'last' => { ops => 0, fn => sub { return defined $last ? $last : 0 } },
+
   'sqrt' => { ops => 1, fn => sub { return sqrt(abs($_[0])) } },
   'root' => { ops => 2, fn => sub { return abs($_[0]) ** (1 / $_[1]) } },
   'log' => { ops => 1, fn => sub { return log($_[0]) } },
   'log10' => { ops => 1, fn => sub { return log($_[0]) / log(10) } }, # fix this
   'logN' => { ops => 2, fn => sub { return log($_[0]) / log($_[1]) } },
-  '<<' => { ops => 2, fn => sub { return $_[0] << $_[1]} },
-  '>>' => { ops => 2, fn => sub { return $_[0] >> $_[1]} },
+
+  # trig
+  'sin' => { ops => 1, fn => sub { return sin($_[0]) } },
+  'asin' => { ops => 1, fn => sub { return atan2($_[0], sqrt(1 - $_[0] * $_[0])) } },
+  'cos' => { ops => 1, fn => sub { return cos($_[0]) } },
+  'acos' => { ops => 1, fn => sub { return atan2(sqrt(1 - $_[0] * $_[0]), $_[0]) } },
+  'tan' => { ops => 1, fn => sub { return sin($_[0]) / cos($_[0]) } }, # sin(x)/cos(x) == tan(x)
+  'atan2' => { ops => 2, fn => sub { return atan2($_[0], $_[1]) } },
+
+  # bitwise
+  '<<'  => { ops => 2, fn => sub { return $_[0] << $_[1]} },
+  '>>'  => { ops => 2, fn => sub { return $_[0] >> $_[1]} },
   'AND' => { ops => 2, fn => sub { return $_[0] & $_[0] } },
-  'OR' => { ops => 2, fn => sub { return $_[0] | $_[0] } },
+  'OR'  => { ops => 2, fn => sub { return $_[0] | $_[0] } },
   'XOR' => { ops => 2, fn => sub { return $_[0] ^ $_[0] } },
   'NOT' => { ops => 1, fn => sub { return ~$_[0] } },
+
+  # special functions
+  'min' => { ops => 2, fn => sub { return $_[0] < $_[1] ? $_[0] : $_[1] } },
+  'max' => { ops => 2, fn => sub { return $_[0] > $_[1] ? $_[0] : $_[1] } },
+  'deg'  => { ops => 1, fn => sub { return $_[0] * 180 / Pi() } },
+  'rad'  => { ops => 1, fn => sub { return $_[0] * Pi() / 180 } },
+  'last' => { ops => 0, fn => sub { return defined $last ? $last : 0 } },
   'time' => { ops => 0, fn => sub { return time() } },
 
   #constants
   'pi' => { ops => 0, fn => sub { return Pi() } },
-  'e' => { ops => 0, fn => sub { return exp(1) } },
-  'c' => { ops => 0, fn => sub { return 2.997924580e8 } },
-  'g' => { ops => 0, fn => sub { return 9.81 } },
-  'G' => { ops => 0, fn => sub { return 6.67384e-11 } }
+  'e'  => { ops => 0, fn => sub { return exp(1) } },
+  'c'  => { ops => 0, fn => sub { return 2.997924580e8 } },
+  'g'  => { ops => 0, fn => sub { return 9.81 } },
+  'G'  => { ops => 0, fn => sub { return 6.67384e-11 } }
 };
 
 sub ops
