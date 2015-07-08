@@ -142,7 +142,7 @@ sub run
     {
       return 'Not enough arguments';
     }
-    if ($channel ne 'all' && index('#', $channel) != 0)
+    if ($channel ne 'all' && index($channel, '#') != 0)
     {
       return 'Bad channel name: ' . $channel . ' should be "#channel" or "all".';
     }
