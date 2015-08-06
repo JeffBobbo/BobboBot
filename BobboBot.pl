@@ -26,6 +26,7 @@ use BobboBot::mod;
 use BobboBot::suit;
 use BobboBot::extract;
 # misc commands
+use BobboBot::excuse;
 use BobboBot::fact;
 use BobboBot::proverb;
 use BobboBot::roll;
