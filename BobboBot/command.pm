@@ -7,10 +7,11 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand);
+our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent numEvents runEvent);
 
 my $commands = {};
 my $aliases = {};
+my @autoEvents = ();
 
 use constant {
   WHO => 0,
@@ -69,6 +70,23 @@ sub isValidCommand
   return 2 if (aliases()->{$com});
   return 1 if (commands()->{$com});
   return 0;
+}
+
+
+# auto event stuff
+sub addEvent
+{
+  push(@autoEvents, shift());
+}
+
+sub numEvents
+{
+  return @autoEvents;
+}
+
+sub runEvent
+{
+  return $autoEvents[shift()]();
 }
 
 1;

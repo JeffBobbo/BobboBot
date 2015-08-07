@@ -299,5 +299,6 @@ sub auth
 BobboBot::command::add('countdown', 'run', \&BobboBot::countdown::run);
 BobboBot::command::add('countdown', 'help', \&BobboBot::countdown::help);
 BobboBot::command::add('countdown', 'auth', \&BobboBot::countdown::auth);
+BobboBot::command::addEvent(\&BobboBot::countdown::doAlerts);
 
 1;

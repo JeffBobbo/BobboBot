@@ -9,36 +9,13 @@ use warnings;
 use POE qw(Component::IRC);
 use File::Copy;
 
+# only "core" modules/commands go in here, rest go in bon.conf
 # super command module
 use BobboBot::command;
 # bobbobot util commands
 use BobboBot::list;
 use BobboBot::help;
 use BobboBot::alias;
-# ss util commands
-use BobboBot::status;
-use BobboBot::ration;
-use BobboBot::manhours;
-use BobboBot::savings;
-use BobboBot::condense;
-use BobboBot::pvp;
-use BobboBot::mod;
-use BobboBot::suit;
-use BobboBot::extract;
-# misc commands
-use BobboBot::excuse;
-use BobboBot::fact;
-use BobboBot::proverb;
-use BobboBot::roll;
-use BobboBot::support;
-use BobboBot::quote;
-use BobboBot::8ball;
-use BobboBot::rpn;
-use BobboBot::roulette;
-use BobboBot::countdown;
-use BobboBot::core;
-use BobboBot::guess;
-use BobboBot::mastermind;
 # supporting modules
 use BobboBot::math;
 use BobboBot::config;
@@ -49,14 +26,22 @@ use BobboBot::access;
 use BobboBot::users;
 use BobboBot::shutdown;
 use BobboBot::restart;
-use BobboBot::force;
 use BobboBot::update;
 
 #flush files
-$| = 1;
 
 my $config = Config->new('bot.conf');
 $config->read();
+
+{
+  my $moduleDir = $config->getValue('moduleDir');
+  foreach my $module (split(' ', $config->getValue('modules')))
+  {
+    require $moduleDir . '/' . $module . '.pm';
+  }
+}
+
+$| = $config->getValue('noBuffer') || 0;
 readUsers();
 
 loadChannels("channels.conf");
@@ -473,20 +458,20 @@ sub autoEvents
     }
   }
 
-  # do server status checks
-  my $string = autoStatus();
-  if (length($string) > 0)
-  {
-    foreach my $chan (channelList())
-    {
-      $irc->yield('privmsg', $chan, $string);
-    }
-  }
-
   # check users
   checkUsers();
 
-  BobboBot::countdown::doAlerts();
+  for (my $i = 0; $i < numEvents(); $i++)
+  {
+    my $string = runEvent($i);
+    if (defined $string && length($string) > 0)
+    {
+      foreach my $chan (channelList())
+      {
+        $irc->yield('privmsg', $chan, $string);
+      }
+    }
+  }
 
   $kernel->delay(autoEvents => $config->getValue("autoEventsInterval"));
 }

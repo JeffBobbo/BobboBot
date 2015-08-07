@@ -110,7 +110,7 @@ sub statusCheck
   return $@ ? -1 : $state; # if we died, return -1, otherwise whatever we got
 }
 
-sub autoStatus # used by autoEvents in BobboBot.pl
+sub autoStatus
 {
   my $statStr = "Automatic update: ";
   for my $x (0..$#{$info->{name}})
@@ -163,5 +163,6 @@ sub auth
 BobboBot::command::add('status', 'run', \&BobboBot::status::run);
 BobboBot::command::add('status', 'help', \&BobboBot::status::help);
 BobboBot::command::add('status', 'auth', \&BobboBot::status::auth);
+BobboBot::command::addEvent(\&BobboBot::status::autoStatus);
 
 1;
