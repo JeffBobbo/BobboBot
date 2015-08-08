@@ -14,16 +14,16 @@ use WebService::UrbanDictionary::Term::Definition;
 use URI::Encode qw(uri_encode);
 sub run
 {
-  my $word = join(' ', @{$_[0]->{arg}});
+  my $phase = join(' ', @{$_[0]->{arg}});
 
-  if (!defined $word || length($word) == 0)
+  if (!defined $phase || length($phase) == 0)
   {
     return 'Nothing to look up!';
   }
 
   my $ud = WebService::UrbanDictionary->new();
-  print uri_encode($word, {encode_reserved => 1}), "\n";
-  my $result = $ud->request(uri_encode($word, {encode_reserved => 1}));
+  print uri_encode($phase, {encode_reserved => 1}), "\n";
+  my $result = $ud->request(uri_encode($phase, {encode_reserved => 1}));
   my @defs = $result->definition();
 
   my $best = 0;
@@ -72,7 +72,7 @@ sub run
 
 sub help
 {
-  return 'ud (word)- Looks up a word on urban dictionary';
+  return 'ud (phase)- Looks up a phase on Urban Dictionary';
 }
 
 sub auth
