@@ -280,16 +280,18 @@ sub irc_public
     return;
   }
 
-  if ($lastMsgs->{$who} && $lastMsgs->{$who}{msg} eq $msg)
+  if ($lastMsgs->{$who} && $lastMsgs->{$who}{msg} eq $msg && time() - $lastMsgs->{$who}{when} < 500)
   {
     $lastMsgs->{$who}{count}++;
     $irc->yield('privmsg', $target, 'Warning: Repeating is not allowed.') if ($lastMsgs->{$who}{count} == 3);
     $irc->yield('kick', $target, substr($who, 0, index($who, '!')), 'Repeating is not allowed.') if ($lastMsgs->{$who}{count} > 3);
+    $lastMsgs->{$who}{when} = time();
   }
   else
   {
     $lastMsgs->{$who}{count} = 1;
     $lastMsgs->{$who}{msg} = $msg;
+    $lastMsgs->{$who}{when} = time();
   }
   return;
 }
