@@ -433,8 +433,11 @@ sub autoEvents
   my ($kernel, $heap) = @_[KERNEL, HEAP];
 
   # check if we're still connected
-  $irc->yield(ping => {});
-  if (time() > (max($lastMsg, $lastPing, $lastPong) + ($config->getValue('autoEventsInterval') * 1.5)))
+  if (time() > (max($lastMsg, $lastPing, $lastPong) + 60))
+  {
+    $irc->yield(ping => {});
+  }
+  if (time() > (max($lastMsg, $lastPing, $lastPong) + 90))
   {
     my $irc = $heap->{irc};
     $irc->yield(connect => {});
@@ -458,20 +461,7 @@ sub autoEvents
     }
   }
 
-  # check users
-  checkUsers();
-
-  for (my $i = 0; $i < numEvents(); $i++)
-  {
-    my $string = runEvent($i);
-    if (defined $string && length($string) > 0)
-    {
-      foreach my $chan (channelList())
-      {
-        $irc->yield('privmsg', $chan, $string);
-      }
-    }
-  }
+  runEvents();
 
   $kernel->delay(autoEvents => $config->getValue("autoEventsInterval"));
 }

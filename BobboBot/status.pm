@@ -163,6 +163,6 @@ sub auth
 BobboBot::command::add('status', 'run', \&BobboBot::status::run);
 BobboBot::command::add('status', 'help', \&BobboBot::status::help);
 BobboBot::command::add('status', 'auth', \&BobboBot::status::auth);
-BobboBot::command::addEvent(\&BobboBot::status::autoStatus);
+BobboBot::command::addEvent(\&BobboBot::status::autoStatus, 60);
 
 1;

@@ -7,7 +7,7 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent numEvents runEvent);
+our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent numEvents runEvents);
 
 my $commands = {};
 my $aliases = {};
@@ -76,17 +76,33 @@ sub isValidCommand
 # auto event stuff
 sub addEvent
 {
-  push(@autoEvents, shift());
+  my $event = {
+    function => shift(),
+    interval => shift() || 1
+  };
+  push(@autoEvents, $event);
 }
 
-sub numEvents
+sub runEvents
 {
-  return @autoEvents;
-}
+  for (my $i = 0; $i < @autoEvents; $i++)
+  {
+    my $now = time();
+    my $event = $autoEvents[$i];
 
-sub runEvent
-{
-  return $autoEvents[shift()]();
+    if (!$event->{last} || $now - $event->{last} > $event->{interval})
+    {
+      my $string = $event->{function}();
+      if (defined $string && length($string) > 0)
+      {
+        foreach my $chan (BobboBot::channels::channelList())
+        {
+          $main::irc->yield('privmsg', $chan, $string);
+        }
+      }
+      $event->{last} = $now;
+    }
+  }
 }
 
 1;
