@@ -54,7 +54,8 @@ sub readPipe
             my @toks = split(':', $message); # who, what, game, room
             my $who = shift(@toks);
             my $action = shift(@toks) eq 'JOIN' ? 'joined' : 'left';
-            my $game = $lookup->{shift(@toks)};
+            my $game = shift(@toks);
+            $game = $lookup->{$game} || $game;
             my $room = substr(shift(@toks), -3) + 1;
             $main::irc->yield('privmsg', $channel, '[Ad-Hoc Server] ' . $who . ' ' . $action . ' room ' . $room . ' (' . $game . ')');
           }
