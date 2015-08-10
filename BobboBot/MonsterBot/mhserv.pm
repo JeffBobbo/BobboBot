@@ -15,7 +15,7 @@ my $lookup = {
   ULJM05800 => 'MHP3rd'
 };
 
-my $path = "../AdhocServer/pipe";
+my $path = "../AdhocServerPro/pipe";
 my $rfd = '';
 
 mkfifo($path, 0666);
@@ -37,24 +37,27 @@ sub readPipe
     my @queue = split("\0", $buf);
     foreach my $message (@queue)
     {
-      switch ($message)
+      foreach my $channel (BobboBot::channels::channelList())
       {
-        case 'START'
+        switch ($message)
         {
-          $main::irc->yield('privmsg', '#bottest', 'Server started');
-        }
-        case 'STOP'
-        {
-          $main::irc->yield('privmsg', '#bottest', 'Server stopped');
-        }
-        else
-        {
-          my @toks = split(':', $message); # who, what, game, room
-          my $who = shift(@toks);
-          my $action = shift(@toks) eq 'JOIN' ? 'joined' : 'left';
-          my $game = $lookup->{shift(@toks)};
-          my $room = substr(shift(@toks), -3) + 1;
-          $main::irc->yield('privmsg', '#bottest', $who . ' ' . $action . ' room ' . $room . ' (' . $game . ')');
+          case 'START'
+          {
+            $main::irc->yield('privmsg', $channel, 'Server started');
+          }
+          case 'STOP'
+          {
+            $main::irc->yield('privmsg', $channel, 'Server stopped');
+          }
+          else
+          {
+            my @toks = split(':', $message); # who, what, game, room
+            my $who = shift(@toks);
+            my $action = shift(@toks) eq 'JOIN' ? 'joined' : 'left';
+            my $game = $lookup->{shift(@toks)};
+            my $room = substr(shift(@toks), -3) + 1;
+            $main::irc->yield('privmsg', $channel, $who . ' ' . $action . ' room ' . $room . ' (' . $game . ')');
+          }
         }
       }
     }
@@ -78,9 +81,9 @@ sub auth
   return accessLevel('normal');
 }
 
-BobboBot::command::add('mhserv', 'run', \&BobboBot::mhserv::run);
-BobboBot::command::add('mhserv', 'help', \&BobboBot::mhserv::help);
-BobboBot::command::add('mhserv', 'auth', \&BobboBot::mhserv::auth);
+#BobboBot::command::add('mhserv', 'run', \&BobboBot::mhserv::run);
+#BobboBot::command::add('mhserv', 'help', \&BobboBot::mhserv::help);
+#BobboBot::command::add('mhserv', 'auth', \&BobboBot::mhserv::auth);
 BobboBot::command::addEvent(\&BobboBot::mhserv::readPipe);
 
 
