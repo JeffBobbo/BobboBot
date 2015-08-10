@@ -43,11 +43,11 @@ sub readPipe
         {
           case 'START'
           {
-            $main::irc->yield('privmsg', $channel, 'Server started');
+            $main::irc->yield('privmsg', $channel, '[Ad-Hoc Server] Server started');
           }
           case 'STOP'
           {
-            $main::irc->yield('privmsg', $channel, 'Server stopped');
+            $main::irc->yield('privmsg', $channel, '[Ad-Hoc Server] Server stopped');
           }
           else
           {
@@ -56,7 +56,7 @@ sub readPipe
             my $action = shift(@toks) eq 'JOIN' ? 'joined' : 'left';
             my $game = $lookup->{shift(@toks)};
             my $room = substr(shift(@toks), -3) + 1;
-            $main::irc->yield('privmsg', $channel, $who . ' ' . $action . ' room ' . $room . ' (' . $game . ')');
+            $main::irc->yield('privmsg', $channel, '[Ad-Hoc Server] ' . $who . ' ' . $action . ' room ' . $room . ' (' . $game . ')');
           }
         }
       }
