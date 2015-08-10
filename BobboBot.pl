@@ -271,8 +271,8 @@ sub irc_public
   my ($who, $target, $msg) = @_[ARG0..ARG2];
   $target = @{$target}[0];
   logMsg($who, $target, $msg);
-  $msg = sanitizeString($msg, 0);
-  my $command = sanitizeString($msg, 1);
+  $msg = sanitizeString($msg);
+  my $command = $msg;
 
   if ($command =~ s/^!([^!].*)$/$1/)
   {
@@ -298,7 +298,7 @@ sub irc_notice
 {
   my ($who, $target, $msg) = @_[ARG0..ARG2];
   $target = @{$target}[0];
-  $msg = sanitizeString($msg, 1);
+  $msg = sanitizeString($msg);
 
   if ($msg =~ s/^!([^!].*)$/$1/)
   {
@@ -312,7 +312,7 @@ sub irc_msg
 {
   my ($who, $target, $msg) = @_[ARG0..ARG2];
   $target = @{$target}[0];
-  $msg = sanitizeString($msg, 1);
+  $msg = sanitizeString($msg);
 
 
   if ($msg =~ s/^!([^!].*)$/$1/)
@@ -468,15 +468,7 @@ sub autoEvents
 
 sub sanitizeString
 {
-  my ($string, $level) = @_;
-  if (!defined $level)
-  {
-    $level = 1;
-  }
+  my $string = shift();
   $string=~ s/(?:[\x1F\x02\x16])|(:?\x03[0-9]{1,2},[0-9]{1,2}|\x03[0-9]{1,2})//g; # remove IRC special characters like colour
-  if ($level > 0)
-  {
-#    $string =~ s/[^a-zA-Z0-9_\-:\/ \\\.!#~ \*\+\?%\^"']//g; # be extra anal and remove some extra things
-  }
   return $string;
 }
