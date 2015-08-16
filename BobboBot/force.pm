@@ -23,8 +23,8 @@ sub auth
   return accessLevel('op');
 }
 
-BobboBot::command::add('force', 'run', \&BobboBot::force::run);
-BobboBot::command::add('force', 'help', \&BobboBot::force::help);
-BobboBot::command::add('force', 'auth', \&BobboBot::force::auth);
+BobboBot::module::add('force', 'run', \&BobboBot::force::run);
+BobboBot::module::add('force', 'help', \&BobboBot::force::help);
+BobboBot::module::add('force', 'auth', \&BobboBot::force::auth);
 
 1;

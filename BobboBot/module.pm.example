@@ -9,7 +9,7 @@ use BobboBot::users;
 # writing new commands is pretty easy as long as you know perl
 #
 # use find and replace to replace instances of MOD_NAME with the name of the command, this is what the command will appear as in !list etc
-# BobboBot::command needs to be imported as well as Exporter, run, help and auth should be exported
+# BobboBot::module needs to be imported as well as Exporter, run, help and auth should be exported
 #
 
 # called when the user does !MOD_NAME
@@ -56,8 +56,8 @@ sub auth
   return accessLevel('utils'); # ignore, utils, normal or op
 }
 
-BobboBot::command::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);
-BobboBot::command::add('MOD_NAME', 'help', \&BobboBot::MOD_NAME::help);
-BobboBot::command::add('MOD_NAME', 'auth', \&BobboBot::MOD_NAME::auth);
+BobboBot::module::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);
+BobboBot::module::add('MOD_NAME', 'help', \&BobboBot::MOD_NAME::help);
+BobboBot::module::add('MOD_NAME', 'auth', \&BobboBot::MOD_NAME::auth);
 
 1;

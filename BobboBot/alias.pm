@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use BobboBot::users;
 
-use BobboBot::command;
+use BobboBot::module;
 use JSON qw(decode_json encode_json);
 
 my $file = 'alias.json';
@@ -88,8 +88,8 @@ sub auth
   return accessLevel('op');
 }
 
-BobboBot::command::add('alias', 'run', \&BobboBot::alias::run);
-BobboBot::command::add('alias', 'help', \&BobboBot::alias::help);
-BobboBot::command::add('alias', 'auth', \&BobboBot::alias::auth);
+BobboBot::module::add('alias', 'run', \&BobboBot::alias::run);
+BobboBot::module::add('alias', 'help', \&BobboBot::alias::help);
+BobboBot::module::add('alias', 'auth', \&BobboBot::alias::auth);
 
 1;

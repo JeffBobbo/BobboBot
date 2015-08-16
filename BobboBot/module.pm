@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-package BobboBot::command;
+package BobboBot::module;
 
 use warnings;
 use strict;

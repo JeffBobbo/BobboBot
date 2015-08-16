@@ -6,7 +6,7 @@ use warnings;
 use strict;
 use BobboBot::users;
 
-use BobboBot::command;
+use BobboBot::module;
 
 sub run
 {
@@ -37,8 +37,8 @@ sub auth
   return accessLevel('utils');
 }
 
-BobboBot::command::add('list', 'run', \&BobboBot::list::run);
-BobboBot::command::add('list', 'help', \&BobboBot::list::help);
-BobboBot::command::add('list', 'auth', \&BobboBot::list::auth);
+BobboBot::module::add('list', 'run', \&BobboBot::list::run);
+BobboBot::module::add('list', 'help', \&BobboBot::list::help);
+BobboBot::module::add('list', 'auth', \&BobboBot::list::auth);
 
 1;

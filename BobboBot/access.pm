@@ -9,7 +9,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(checkAccess);
 
-use BobboBot::command;  # commands(), isValidCommand()
+use BobboBot::module;  # commands(), isValidCommand()
 use BobboBot::users;    # accessLevel, accessName, userIdentified, userAccess
 use BobboBot::channels; # channelData()
 
@@ -97,8 +97,8 @@ sub auth
   return accessLevel('ignore'); # special case, so ignored people know
 }
 
-BobboBot::command::add('access', 'run', \&BobboBot::access::run);
-BobboBot::command::add('access', 'help', \&BobboBot::access::help);
-BobboBot::command::add('access', 'auth', \&BobboBot::access::auth);
+BobboBot::module::add('access', 'run', \&BobboBot::access::run);
+BobboBot::module::add('access', 'help', \&BobboBot::access::help);
+BobboBot::module::add('access', 'auth', \&BobboBot::access::auth);
 
 1;

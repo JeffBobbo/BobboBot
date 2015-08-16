@@ -15,13 +15,13 @@ sub run
 
   if (!defined $command)
   {
-    return BobboBot::command::commands()->{'list'}{run}(@_); # hard coded, slightly eww
+    return BobboBot::module::commands()->{'list'}{run}(@_); # hard coded, slightly eww
   }
-  if (!defined BobboBot::command::commands()->{$command})
+  if (!defined BobboBot::module::commands()->{$command})
   {
     return 'Unknown command: ' . $command .  ".";
   }
-  return BobboBot::command::commands()->{$command}{help}(@_);
+  return BobboBot::module::commands()->{$command}{help}(@_);
 }
 
 sub help
@@ -34,8 +34,8 @@ sub auth
   return accessLevel('utils');
 }
 
-BobboBot::command::add('help', 'run', \&BobboBot::help::run);
-BobboBot::command::add('help', 'help', \&BobboBot::help::help);
-BobboBot::command::add('help', 'auth', \&BobboBot::help::auth);
+BobboBot::module::add('help', 'run', \&BobboBot::help::run);
+BobboBot::module::add('help', 'help', \&BobboBot::help::help);
+BobboBot::module::add('help', 'auth', \&BobboBot::help::auth);
 
 1;

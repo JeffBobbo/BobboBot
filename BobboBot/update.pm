@@ -26,8 +26,8 @@ sub auth
   return accessLevel('op');
 }
 
-BobboBot::command::add('update', 'run', \&BobboBot::update::run);
-BobboBot::command::add('update', 'help', \&BobboBot::update::help);
-BobboBot::command::add('update', 'auth', \&BobboBot::update::auth);
+BobboBot::module::add('update', 'run', \&BobboBot::update::run);
+BobboBot::module::add('update', 'help', \&BobboBot::update::help);
+BobboBot::module::add('update', 'auth', \&BobboBot::update::auth);
 
 1;
