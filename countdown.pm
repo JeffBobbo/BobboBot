@@ -296,9 +296,9 @@ sub auth
   return accessLevel('utils');
 }
 
-BobboBot::command::add('countdown', 'run', \&BobboBot::countdown::run);
-BobboBot::command::add('countdown', 'help', \&BobboBot::countdown::help);
-BobboBot::command::add('countdown', 'auth', \&BobboBot::countdown::auth);
-BobboBot::command::addEvent(\&BobboBot::countdown::doAlerts, 30);
+BobboBot::module::add('countdown', 'run', \&BobboBot::countdown::run);
+BobboBot::module::add('countdown', 'help', \&BobboBot::countdown::help);
+BobboBot::module::add('countdown', 'auth', \&BobboBot::countdown::auth);
+BobboBot::module::addEvent(\&BobboBot::countdown::doAlerts, 30);
 
 1;
