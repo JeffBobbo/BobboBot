@@ -31,7 +31,8 @@ sub getFileName
 sub read
 {
   my $self = shift();
-  open(my $fh, '<', $self->{file}) or die "Can't open $self->{file} for reading: $!\n";#, __LINE__;
+  my $file = $self->getFileName();
+  open(my $fh, '<', $file) or die  __FILE__ . ':' .__LINE__ . " Can't open " . $file . ": $!\n";
   while (<$fh>)
   {
     chomp(); # remove tailing whitespace
