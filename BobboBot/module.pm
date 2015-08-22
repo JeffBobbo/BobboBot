@@ -7,7 +7,7 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent numEvents runEvents);
+our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent numEvents runEvents loadModules);
 
 my $commands = {};
 my $aliases = {};
@@ -19,6 +19,49 @@ use constant {
   FORM => 2,
   ARG => 3
 };
+
+use JSON;
+
+sub loadModules
+{
+  my $file = shift() || 'modules.json';
+
+  my $text = '';
+  if (open(my $fh, '<', $file))
+  {
+    my @lines = <$fh>;
+    close($fh);
+    $text = join('', @lines);
+  }
+
+  my $json = decode_json($text) || {};
+
+  moduleTree($json);
+}
+
+sub moduleTree
+{
+  my $json = shift();
+  my $path = shift() || '';
+
+  if (ref($json) eq 'HASH')
+  {
+    my @keys = keys %{$json};
+    foreach my $key (@keys)
+    {
+      my $npath = $path . $key;
+      moduleTree($json->{$key}, $npath . '/');
+    }
+  }
+  if (ref($json) eq 'ARRAY')
+  {
+    foreach my $e (@{$json})
+    {
+      my $mod = $path . $e . '.pm';
+      require $mod;
+    }
+  }
+}
 
 sub add
 {

@@ -11,7 +11,7 @@ use File::Copy;
 
 # only "core" modules/commands go in here, rest go in bon.conf
 # super command module
-use BobboBot::command;
+use BobboBot::module;
 # bobbobot util commands
 use BobboBot::list;
 use BobboBot::help;
@@ -32,19 +32,12 @@ use BobboBot::update;
 
 my $config = Config->new('bot.conf');
 $config->read();
-
-{
-  my $moduleDir = $config->getValue('moduleDir');
-  foreach my $module (split(' ', $config->getValue('modules')))
-  {
-    require $moduleDir . '/' . $module . '.pm';
-  }
-}
-
 $| = $config->getValue('noBuffer') || 0;
+
+loadModules();
 readUsers();
 
-loadChannels("channels.conf");
+loadChannels('channels.conf');
 
 # load alias
 BobboBot::alias::load();
