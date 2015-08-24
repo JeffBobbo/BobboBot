@@ -23,8 +23,8 @@ sub auth
   return accessLevel('op');
 }
 
-BobboBot::module::add('restart', 'run', \&BobboBot::restart::run);
-BobboBot::module::add('restart', 'help', \&BobboBot::restart::help);
-BobboBot::module::add('restart', 'auth', \&BobboBot::restart::auth);
+BobboBot::module::addCommand('restart', 'run', \&BobboBot::restart::run);
+BobboBot::module::addCommand('restart', 'help', \&BobboBot::restart::help);
+BobboBot::module::addCommand('restart', 'auth', \&BobboBot::restart::auth);
 
 1;

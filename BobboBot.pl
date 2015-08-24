@@ -28,13 +28,12 @@ use BobboBot::shutdown;
 use BobboBot::restart;
 use BobboBot::update;
 
-#flush files
-
 my $config = Config->new('bot.conf');
 $config->read();
 $| = $config->getValue('noBuffer') || 0;
 
 loadModules();
+runEvent('LOAD');
 readUsers();
 
 loadChannels('channels.conf');
@@ -56,6 +55,7 @@ use constant {
   NOTICE  => 1,
   PRIVMSG => 2,
 };
+
 
 our $irc = POE::Component::IRC->spawn(
   Nick     => $config->getValue("nick"),
@@ -100,6 +100,8 @@ sub _start
 {
   my ($kernel, $heap) = @_[KERNEL, HEAP];
 
+  runEvent('START');
+
   my $irc = $heap->{irc};
 
   $irc->yield(register => 'all');
@@ -114,20 +116,24 @@ sub _stop
 {
   if ($cleanExit == 2)
   {
+    runEvent('RESTART');
     exec "./StartBot";
   }
   elsif ($cleanExit == 1)
   {
+    runEvent('STOP');
     exit(0);
   }
 }
 
-sub irc_001 {
+sub irc_001
+{
   my ($sender, $kernel) = @_[SENDER, KERNEL];
 
   my $irc = $sender->get_heap();
 
   print STDOUT "Connected to ", $irc->server_name(), "\n";
+  runEvent('CONNECT');
 
   my $ns = Config->new('ns.conf');
   $ns->read();
@@ -434,6 +440,7 @@ sub autoEvents
   }
   if (time() > (max($lastMsg, $lastPing, $lastPong) + 90))
   {
+    runEvent('DISCONNECT');
     my $irc = $heap->{irc};
     $irc->yield(connect => {});
     $kernel->delay(autoEvents => $config->getValue('autoEventsInterval')); # set this again, incase connect fails
@@ -454,9 +461,10 @@ sub autoEvents
       $kernel->delay(autoEvents => 2);
       return; # return early so we don't overwrite this or do status checks twice quickly
     }
+    undef $ns;
   }
 
-  runEvents();
+  runEvent('AUTO');
 
   $kernel->delay(autoEvents => $config->getValue("autoEventsInterval"));
 }

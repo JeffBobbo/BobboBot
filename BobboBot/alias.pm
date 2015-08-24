@@ -88,8 +88,8 @@ sub auth
   return accessLevel('op');
 }
 
-BobboBot::module::add('alias', 'run', \&BobboBot::alias::run);
-BobboBot::module::add('alias', 'help', \&BobboBot::alias::help);
-BobboBot::module::add('alias', 'auth', \&BobboBot::alias::auth);
+BobboBot::module::addCommand('alias', 'run', \&BobboBot::alias::run);
+BobboBot::module::addCommand('alias', 'help', \&BobboBot::alias::help);
+BobboBot::module::addCommand('alias', 'auth', \&BobboBot::alias::auth);
 
 1;

@@ -7,18 +7,10 @@ use strict;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent numEvents runEvents loadModules);
+our @EXPORT = qw(loadModules commands commandsList aliases aliasesList setAliases lookupAlias isValidCommand addEvent runEvent);
 
 my $commands = {};
 my $aliases = {};
-my @autoEvents = ();
-
-use constant {
-  WHO => 0,
-  WHERE => 1,
-  FORM => 2,
-  ARG => 3
-};
 
 use JSON;
 
@@ -63,7 +55,7 @@ sub moduleTree
   }
 }
 
-sub add
+sub addCommand
 {
   my $name = shift();
   my $which = shift();
@@ -115,25 +107,52 @@ sub isValidCommand
   return 0;
 }
 
+# event stuff
+my $events = {
+  LOAD   => [], # after modules are require'd
+#  UNLOAD => [], # when unloaded ?
+  CONNECT    => [], # when connection to IRCd is made
+  DISCONNECT => [], # when disconnected
+  AUTO => [],
 
-# auto event stuff
+  START   => [],
+  STOP    => [],
+  RESTART => [],
+};
+
 sub addEvent
 {
-  my $event = {
-    function => shift(),
-    interval => shift() || 1
-  };
-  push(@autoEvents, $event);
+  my $type = shift();
+  my $fn   = shift();
+  my $opt  = shift();
+
+  if (!$events->{$type})
+  {
+    die "Tried to register for unknown event: " . $type . "\n";
+  }
+
+  push(@{$events->{$type}}, {function => $fn, opt => $opt});
 }
 
-sub runEvents
+use Data::Dumper;
+
+sub runEvent
 {
-  for (my $i = 0; $i < @autoEvents; $i++)
+  my $type = shift();
+  my $data = shift(); # any extra data
+
+  my @toRun = @{$events->{$type}};
+
+  if ($type eq 'START')
+  {
+    print Dumper($events->{$type});
+  }
+
+  for (my $i = 0; $i < @toRun; $i++)
   {
     my $now = time();
-    my $event = $autoEvents[$i];
-
-    if (!$event->{last} || $now - $event->{last} > $event->{interval})
+    my $event = $toRun[$i];
+    if ($type ne 'AUTO' || (!$event->{last} || $now - $event->{last} > $event->{opt}))
     {
       my $string = $event->{function}();
       if (defined $string && length($string) > 0)

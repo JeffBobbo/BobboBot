@@ -56,8 +56,8 @@ sub auth
   return accessLevel('utils'); # ignore, utils, normal or op
 }
 
-BobboBot::module::add('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);
-BobboBot::module::add('MOD_NAME', 'help', \&BobboBot::MOD_NAME::help);
-BobboBot::module::add('MOD_NAME', 'auth', \&BobboBot::MOD_NAME::auth);
+BobboBot::module::addCommand('MOD_NAME', 'run', \&BobboBot::MOD_NAME::run);
+BobboBot::module::addCommand('MOD_NAME', 'help', \&BobboBot::MOD_NAME::help);
+BobboBot::module::addCommand('MOD_NAME', 'auth', \&BobboBot::MOD_NAME::auth);
 
 1;

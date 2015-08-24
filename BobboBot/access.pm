@@ -97,8 +97,8 @@ sub auth
   return accessLevel('ignore'); # special case, so ignored people know
 }
 
-BobboBot::module::add('access', 'run', \&BobboBot::access::run);
-BobboBot::module::add('access', 'help', \&BobboBot::access::help);
-BobboBot::module::add('access', 'auth', \&BobboBot::access::auth);
+BobboBot::module::addCommand('access', 'run', \&BobboBot::access::run);
+BobboBot::module::addCommand('access', 'help', \&BobboBot::access::help);
+BobboBot::module::addCommand('access', 'auth', \&BobboBot::access::auth);
 
 1;

@@ -37,8 +37,8 @@ sub auth
   return accessLevel('utils');
 }
 
-BobboBot::module::add('list', 'run', \&BobboBot::list::run);
-BobboBot::module::add('list', 'help', \&BobboBot::list::help);
-BobboBot::module::add('list', 'auth', \&BobboBot::list::auth);
+BobboBot::module::addCommand('list', 'run', \&BobboBot::list::run);
+BobboBot::module::addCommand('list', 'help', \&BobboBot::list::help);
+BobboBot::module::addCommand('list', 'auth', \&BobboBot::list::auth);
 
 1;

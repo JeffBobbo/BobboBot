@@ -202,6 +202,6 @@ sub levels
   return $levels;
 }
 
-BobboBot::module::addEvent(\&BobboBot::users::checkUsers, 120);
+BobboBot::module::addEvent('AUTO', \&BobboBot::users::checkUsers, 120);
 
 1;

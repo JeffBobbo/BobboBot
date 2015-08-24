@@ -24,8 +24,8 @@ sub auth
   return accessLevel('op');
 }
 
-BobboBot::module::add('shutdown', 'run', \&BobboBot::shutdown::run);
-BobboBot::module::add('shutdown', 'help', \&BobboBot::shutdown::help);
-BobboBot::module::add('shutdown', 'auth', \&BobboBot::shutdown::auth);
+BobboBot::module::addCommand('shutdown', 'run', \&BobboBot::shutdown::run);
+BobboBot::module::addCommand('shutdown', 'help', \&BobboBot::shutdown::help);
+BobboBot::module::addCommand('shutdown', 'auth', \&BobboBot::shutdown::auth);
 
 1;
