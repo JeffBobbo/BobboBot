@@ -1,0 +1,12 @@
+[submodule "BobboBot/ss"]
+	path = BobboBot/ss
+	url = https://github.com/JeffBobbo/ss.git
+[submodule "BobboBot/mh"]
+	path = BobboBot/mh
+	url = https://github.com/JeffBobbo/mh.git
+[submodule "BobboBot/util"]
+	path = BobboBot/util
+	url = https://github.com/JeffBobbo/util.git
+[submodule "BobboBot/fun"]
+	path = BobboBot/fun
+	url = https://github.com/JeffBobbo/fun.git
