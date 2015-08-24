@@ -171,8 +171,8 @@ sub auth
   return accessLevel('normal');
 }
 
-BobboBot::module::add('rpn', 'run', \&BobboBot::rpn::run);
-BobboBot::module::add('rpn', 'help', \&BobboBot::rpn::help);
-BobboBot::module::add('rpn', 'auth', \&BobboBot::rpn::auth);
+BobboBot::module::addCommand('rpn', 'run', \&BobboBot::rpn::run);
+BobboBot::module::addCommand('rpn', 'help', \&BobboBot::rpn::help);
+BobboBot::module::addCommand('rpn', 'auth', \&BobboBot::rpn::auth);
 
 1;
