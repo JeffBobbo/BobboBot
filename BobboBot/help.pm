@@ -17,11 +17,11 @@ sub run
   {
     return BobboBot::module::commands()->{'list'}{run}(@_); # hard coded, slightly eww
   }
-  if (!defined BobboBot::module::commands()->{$command})
+  if (BobboBot::module::isValidCommand($command) == 0)
   {
     return 'Unknown command: ' . $command .  ".";
   }
-  return BobboBot::module::commands()->{$command}{help}(@_);
+  return BobboBot::module::commands()->{BobboBot::module::lookupAlias($command)}{help}(@_);
 }
 
 sub help
