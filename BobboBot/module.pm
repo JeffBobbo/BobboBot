@@ -154,12 +154,26 @@ sub runEvent
     my $event = $toRun[$i];
     if ($type ne 'AUTO' || (!$event->{last} || $now - $event->{last} > $event->{opt}))
     {
-      my $string = $event->{function}();
-      if (defined $string && length($string) > 0)
+      my $ret = $event->{function}();
+      my $channel = undef;
+      my $msg = '';
+      if (ref($ret) eq 'ARRAY')
       {
-        foreach my $chan (BobboBot::channels::channelList())
+        $channel = $ret->[0];
+        $msg = $ret->[1];
+      }
+      else
+      {
+        $msg = $ret;
+      }
+      if (defined $msg && length($msg) > 0)
+      {
+        foreach my $c (BobboBot::channels::channelList())
         {
-          $main::irc->yield('privmsg', $chan, $string);
+          if (!defined $channel || $channel eq $c)
+          {
+            $main::irc->yield('privmsg', $c, $msg);
+          }
         }
       }
       $event->{last} = $now;
